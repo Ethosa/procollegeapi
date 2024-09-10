@@ -26,8 +26,8 @@ async def sign_in(user: LoginUser):
             form_data = page_data.find('form', id='login')
             user_id = page_data.find('div', id='nav-notification-popover-container').get('data-userid')
             login_token = form_data.find('input', {'name': 'logintoken'}).get('value')
-    except Exception:
-        pass
+    except Exception as e:
+        print(e)
     if not login_token:
         await session.close()
         return error('Произошла неизвестная ошибка, попробуйте позже.')
@@ -44,7 +44,8 @@ async def sign_in(user: LoginUser):
             for key, val in cookies.items():
                 _headers['Cookie'] = val.value
                 token = key.replace('MoodleSession', '') + ':' + val.value
-    except Exception:
+    except Exception as e:
+        print(e)
         await session.close()
         return error('Произошла неизвестная ошибка, попробуйте позже.')
     await session.close()

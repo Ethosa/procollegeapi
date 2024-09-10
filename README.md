@@ -3,8 +3,7 @@
 
 ## Авторизация
 ```http
-POST HTTP/1.1
-/user/login
+POST /user/login
 {
     "login": "user login",
     "password": "user password"
@@ -65,4 +64,8 @@ GET /user/info?access_token=<ACCESS_TOKEN>
 ```
 
 
-## Получение 
+## Перемещение по дням расписания
+```http
+GET /user/day/{OFFSET}?access_token=<ACCESS_TOKEN>
+
+```
