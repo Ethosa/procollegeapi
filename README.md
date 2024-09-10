@@ -63,3 +63,6 @@ GET /user/info?access_token=<ACCESS_TOKEN>
     ]
 }
 ```
+
+
+## Получение 

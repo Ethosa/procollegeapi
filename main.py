@@ -10,6 +10,7 @@ from mounts.blogs import blogs_app
 
 app = FastAPI()
 app.add_middleware(CORSMiddleware(
+    app,
     allow_headers="*",
     allow_methods="*",
     allow_origins="*",
