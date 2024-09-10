@@ -67,11 +67,11 @@ GET /user/info?access_token=<ACCESS_TOKEN>
 ## Перемещение по дням расписания
 ```http
 GET /user/day/{OFFSET}?access_token=<ACCESS_TOKEN>
+```
 
-OFFSET - целое число
+`OFFSET` - целое число
 например `-1` для сдвига на один день назад
 или `9` для сдвига на 9 дней вперед
-```
 
 ### Response
 ```json
