@@ -27,7 +27,7 @@ async def get_all_branches(squeeze: bool = False):
                 continue
             branches.append({
                 'id': int(option.get('value')),
-                'title': squeeze_title(option.text) if squeeze else option.text
+                'title': squeeze_title(option.text.strip()) if squeeze else option.text.strip()
             })
     await session.close()
     return branches

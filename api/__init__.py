@@ -3,6 +3,7 @@ MY_DESKTOP = "https://pro.kansk-tc.ru/my/"
 SERVICE = "https://pro.kansk-tc.ru/lib/ajax/service.php"
 TEACHERS_TIMETABLE = "https://pro.kansk-tc.ru/blocks/manage_groups/timetable_new/print_tt_teacher.php"
 PROFILE_TIMETABLE = "https://pro.kansk-tc.ru/blocks/psm_desktop/desktop_lib.php?dirroot=/www/procollege"
+BLOG_PAGE = "https://pro.kansk-tc.ru/blog/index.php"
 
 
 CORE_MESSAGE_GET_CONVERSATIONS = 'core_message_get_conversations'

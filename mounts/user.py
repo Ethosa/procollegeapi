@@ -18,11 +18,13 @@ user_app = FastAPI()
 @user_app.post('/login')
 async def sign_in(user: LoginUser):
     login_token: str | None = None
+    user_id: str | None = None
     session = ClientSession()
     try:
         async with session.get(LOGIN_URL, headers=USER_AGENT_HEADERS) as response:
             page_data = BeautifulSoup(await response.text())
             form_data = page_data.find('form', id='login')
+            user_id = page_data.find('div', id='nav-notification-popover-container').get('data-userid')
             login_token = form_data.find('input', {'name': 'logintoken'}).get('value')
     except Exception:
         pass
@@ -47,7 +49,8 @@ async def sign_in(user: LoginUser):
         return error('Произошла неизвестная ошибка, попробуйте позже.')
     await session.close()
     return {
-        'access_token': token
+        'access_token': token,
+        'user_id': int(user_id) if user_id else 0
     }
 
 
@@ -68,27 +71,27 @@ async def get_user_info(access_token: str):
         page_data = BeautifulSoup(await response.text())
         main_info_div = page_data.find('div', id='d-info')
         for i in main_info_div.find_all('tr'):
-            main_info[i.th.text] = i.td.text
+            main_info[i.th.text] = i.td.text.strip()
         user_menu = page_data.find('a', id='usermenu')
         if user_menu is not None:
-            user_info['name'] = user_menu.span.text
+            user_info['name'] = user_menu.span.text.strip()
             user_info['image'] = page_data.find('img', {'class': 'userpicture'}).get('src')
         courses_data = page_data.find('div', id='d-course')
         for course in courses_data.find_all('div', {'class': 'block-years'}):
             data = {
-                'title': course.find('div', {'class': 'course-title'}).text,
+                'title': course.find('div', {'class': 'course-title'}).text.strip(),
                 'courses': []
             }
             for c in course.find_all('div', {'class': 'course-container'}):
                 # print(c.contents[-1])
                 data['courses'].append({
-                    'title': c.a.text,
-                    'teacher': c.contents[-1]
+                    'title': c.a.text.strip(),
+                    'teacher': c.contents[-1].strip()
                 })
             courses.append(data)
         today_data = page_data.find('div', id='d-timetable')
         today = {
-            'title': today_data.h3.text,
+            'title': today_data.h3.text.strip(),
             'lessons': [],
             'minutes': 0,
         }
@@ -101,11 +104,11 @@ async def get_user_info(access_token: str):
                 to_minutes = int(to[0])*60 + int(to[1])
                 today['minutes'] += to_minutes - frm_minutes
             today['lessons'].append({
-                'number': lesson.find('div', {'class': 'lesson-number'}).text,
-                'lesson_time': [lesson_time.contents[0].text, lesson_time.contents[-1].text],
-                'teacher': lesson.find('div', {'class': 'lesson-group'}).text,
-                'title': lesson.find('div', {'class': 'lesson-course'}).a.text,
-                'classroom': lesson.find('div', {'class': 'lesson-classroom'}).text
+                'number': lesson.find('div', {'class': 'lesson-number'}).text.strip(),
+                'lesson_time': [lesson_time.contents[0].text.strip(), lesson_time.contents[-1].text.strip()],
+                'teacher': lesson.find('div', {'class': 'lesson-group'}).text.strip(),
+                'title': lesson.find('div', {'class': 'lesson-course'}).a.text.strip(),
+                'classroom': lesson.find('div', {'class': 'lesson-classroom'}).text.strip()
             })
     await session.close()
     return {
@@ -137,7 +140,7 @@ async def get_timetable_for_day(access_token: str, day_number: int = 0):
     async with session.get(PROFILE_TIMETABLE, params=params, headers=_headers) as response:
         page_data = BeautifulSoup(await response.text())
         today = {
-            'title': page_data.h3.text,
+            'title': page_data.h3.text.strip(),
             'lessons': [],
             'minutes': 0,
         }
@@ -150,11 +153,11 @@ async def get_timetable_for_day(access_token: str, day_number: int = 0):
                 to_minutes = int(to[0])*60 + int(to[1])
                 today['minutes'] += to_minutes - frm_minutes
             today['lessons'].append({
-                'number': lesson.find('div', {'class': 'lesson-number'}).text,
-                'lesson_time': [lesson_time.contents[0].text, lesson_time.contents[-1].text],
-                'teacher': lesson.find('div', {'class': 'lesson-group'}).text,
-                'title': lesson.find('div', {'class': 'lesson-course'}).a.text,
-                'classroom': lesson.find('div', {'class': 'lesson-classroom'}).text
+                'number': lesson.find('div', {'class': 'lesson-number'}).text.strip(),
+                'lesson_time': [lesson_time.contents[0].text.strip(), lesson_time.contents[-1].text.strip()],
+                'teacher': lesson.find('div', {'class': 'lesson-group'}).text.strip(),
+                'title': lesson.find('div', {'class': 'lesson-course'}).a.text.strip(),
+                'classroom': lesson.find('div', {'class': 'lesson-classroom'}).text.strip()
             })
     await session.close()
     return today

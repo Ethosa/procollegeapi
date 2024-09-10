@@ -19,7 +19,7 @@ async def get_all_branches(branch_id: int):
                 continue
             teachers.append({
                 'id': int(option.get('value')),
-                'title': option.text
+                'title': option.text.strip()
             })
     await session.close()
     return teachers
