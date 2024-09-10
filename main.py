@@ -9,13 +9,13 @@ from mounts.blogs import blogs_app
 
 
 app = FastAPI()
-app.add_middleware(CORSMiddleware(
-    app,
+app.add_middleware(
+    CORSMiddleware,
     allow_headers="*",
     allow_methods="*",
     allow_origins="*",
     allow_credentials=True
-))
+)
 
 app.mount('/user', user_app)
 app.mount('/branches', branches_app)
