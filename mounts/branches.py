@@ -1,0 +1,33 @@
+from fastapi import FastAPI
+from aiohttp import ClientSession
+from bs4 import BeautifulSoup
+
+from api import TEACHERS_TIMETABLE
+
+
+branches_app = FastAPI()
+
+
+def squeeze_title(title: str) -> str:
+    return title.replace(
+        'Краевое государственное бюджетное профессиональное образовательное учреждение', 'КГБПОУ'
+    ).replace(
+        'краевого государственного бюджетного профессионального образовательного учреждения', 'КГБПОУ'
+    )
+
+
+@branches_app.get('/')
+async def get_all_branches(squeeze: bool = False):
+    session = ClientSession()
+    branches = []
+    async with session.get(TEACHERS_TIMETABLE) as response:
+        page_data = BeautifulSoup(await response.text())
+        for option in page_data.find('select', id='dep').find_all('option'):
+            if option.get('value') == '0':
+                continue
+            branches.append({
+                'id': int(option.get('value')),
+                'title': squeeze_title(option.text) if squeeze else option.text
+            })
+    await session.close()
+    return branches
