@@ -68,4 +68,27 @@ GET /user/info?access_token=<ACCESS_TOKEN>
 ```http
 GET /user/day/{OFFSET}?access_token=<ACCESS_TOKEN>
 
+OFFSET - целое число
+например `-1` для сдвига на один день назад
+или `9` для сдвига на 9 дней вперед
+```
+
+### Response
+```json
+{
+    "title": "Суббота, 14/09/2024",
+    "lessons": [
+        {
+            "number": "1",
+            "lesson_time": [
+                "8:15",
+                "9:45"
+            ],
+            "teacher": "XXXXX",
+            "title": "XXXXXXXXXX",
+            "classroom": "XXX"
+        }
+    ],
+    "minutes": 360
+}
 ```
