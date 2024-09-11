@@ -192,6 +192,7 @@ GET /timetable/students/{branch_id}
 ## Получение расписания группы студентов
 ```http
 GET /timetable/students/{branch_id}/group/{group_id}
+GET /timetable/students/{branch_id}/group/{group_id}/week/{week_number}
 ```
 
 ### Response
