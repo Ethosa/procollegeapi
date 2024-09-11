@@ -96,6 +96,30 @@ GET /user/day/{OFFSET}?access_token=<ACCESS_TOKEN>
 ```
 
 
+## Получение списка диалогов пользователя
+```http
+GET /user/conversations?access_token=<ACCESS_TOKEN>
+```
+
+### Response
+```json
+[
+    {
+        "title": "XXXX XXXXX",
+        "id": 1234,
+        "image": "https://example.com",
+        "type": "private",
+        "last_message": {
+            "text": "XXXXX",
+            "time": 175000000,
+            "from": 1235,
+            "you": true
+        }
+    }, ...
+]
+```
+
+
 ## Получение филиалов колледжа
 ```http
 GET /branches/
@@ -139,4 +163,58 @@ GET /teachers/{branch_id}
         "title": "XXXXX XXXXXX XXXXXXXXX"
     }, ...
 ]
+```
+
+
+## Получение списка курсов и групп филиала
+```http
+GET /timetable/students/{branch_id}
+```
+
+`branch_id` - ID филиала
+
+### Response
+```json
+[
+    {
+        "title": "XX курс:",
+        "groups": [
+            {
+                "id": 123,
+                "title": "XX.XX.XX.XX"
+            }, ...
+        ]
+    }, ...
+]
+```
+
+
+## Получение расписания группы студентов
+```http
+GET /timetable/students/{branch_id}/group/{group_id}
+```
+
+### Response
+```json
+{
+    "days": [
+        {
+            "title": "XX XXXXX, XXXXXXX",
+            "lessons": [
+                {
+                    "number": 1,
+                    "start": "XX:XX",
+                    "end": "XX:XX",
+                    "title": "XXXXXXXX XXXXXXXXXXXX",
+                    "teacher": "XXXXXXX X.X.",
+                    "classroom": "XXX XXX"
+                }, ...
+            ]
+        }, ...
+    ],
+    "header": "Расписание для группы XX.XX.XX.XX",
+    "current_week": 4,
+    "next_week": 5,
+    "previous_week": 3
+}
 ```

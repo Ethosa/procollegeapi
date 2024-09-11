@@ -204,6 +204,4 @@ async def get_all_conversations(access_token: str):
     if not access_token:
         return error('Произошла неизвестная ошибка, попробуйте позже')
     await session.close()
-    return {
-        "conversations": conversations
-    }
+    return conversations
