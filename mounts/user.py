@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
@@ -8,8 +8,8 @@ from api import (
     MY_DESKTOP, CORE_MESSAGE_GET_CONVERSATIONS,
     SERVICE, PROFILE_TIMETABLE
 )
-from models.user import LoginUser, Signed
-from utils import error, headers, get_moodle
+from models.user import LoginUser
+from utils import error, headers, check_auth
 
 
 user_app = FastAPI()
@@ -59,13 +59,9 @@ async def sign_in(user: LoginUser):
 
 @user_app.get('/info')
 async def get_user_info(access_token: str):
-    if not access_token:
-        return error('Вы не авторизованы')
+    if isinstance(_headers := await check_auth(access_token), JSONResponse):
+        return _headers
     session = ClientSession()
-    moodle = get_moodle(access_token)
-    _headers = headers({
-        'Cookie': moodle['cookie']
-    })
     main_info = {}
     user_info = {}
     courses = []
@@ -124,13 +120,9 @@ async def get_user_info(access_token: str):
 
 @user_app.get('/day/{day_number:int}')
 async def get_timetable_for_day(access_token: str, day_number: int = 0):
-    if not access_token:
-        return error('Вы не авторизованы')
+    if isinstance(_headers := await check_auth(access_token), JSONResponse):
+        return _headers
     session = ClientSession()
-    moodle = get_moodle(access_token)
-    _headers = headers({
-        'Cookie': moodle['cookie']
-    })
     user_id: str | None = None
     async with session.get(MY_DESKTOP, headers=_headers) as response:
         page_data = BeautifulSoup(await response.text())
@@ -168,13 +160,9 @@ async def get_timetable_for_day(access_token: str, day_number: int = 0):
 
 @user_app.get('/conversations')
 async def get_all_conversations(access_token: str):
-    if not access_token:
-        return error('Вы не авторизованы')
+    if isinstance(_headers := await check_auth(access_token), JSONResponse):
+        return _headers
     session = ClientSession()
-    moodle = get_moodle(access_token)
-    _headers = headers({
-        'Cookie': moodle['cookie']
-    })
     sess_key: str | None = None
     user_id: str | None = None
     async with session.get(MY_DESKTOP, headers=_headers) as response:
