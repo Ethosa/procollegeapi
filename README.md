@@ -1,6 +1,14 @@
 # Pro college API
 
 
+## Содержание
+- [`/user` документация по пользовательским маршрутам](http://127.0.0.1:8000/user/redoc)
+- [`/blogs` документация по блогам](http://127.0.0.1:8000/blogs/redoc)
+- [`/teachers` документация по преподавателям](http://127.0.0.1:8000/teachers/redoc)
+- [`/timetable` документация по расписанию](http://127.0.0.1:8000/timetable/redoc)
+- [`/branches` документация по филиалам ](http://127.0.0.1:8000/branches/redoc)
+
+
 ## Авторизация
 ```http
 POST /user/login
