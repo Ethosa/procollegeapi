@@ -33,6 +33,7 @@ async def sign_in(user: LoginUser):
     token: str | None = None
     _headers = headers()
     try:
+        err = None
         async with session.post(LOGIN_URL, headers=USER_AGENT_HEADERS, data={
             'anchor': '',
             'logintoken': login_token,
@@ -43,6 +44,12 @@ async def sign_in(user: LoginUser):
             for key, val in cookies.items():
                 _headers['Cookie'] = val.value
                 token = key.replace('MoodleSession', '') + ':' + val.value
+            page_data = BeautifulSoup(await response.text())
+            if page_data is not None:
+                err = page_data.find('a', {'id': 'loginerrormessage'})
+        if err is not None:
+            await session.close()
+            return error(err.text.strip())
     except Exception as e:
         print(e)
         await session.close()
