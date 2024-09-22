@@ -9,7 +9,7 @@ teacher_app = FastAPI()
 
 
 @teacher_app.get('/{branch_id:int}')
-async def get_all_branches(branch_id: int):
+async def get_teachers_by_branch_id(branch_id: int):
     session = ClientSession()
     teachers = []
     async with session.get(TEACHERS_TIMETABLE) as response:
