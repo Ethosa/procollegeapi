@@ -6,6 +6,7 @@ STUDENTS_TIMETABLE_GROUPS = "https://pro.kansk-tc.ru/blocks/manage_groups/websit
 STUDENTS_TIMETABLE_GROUP = "https://pro.kansk-tc.ru/blocks/manage_groups/website/view.php"
 PROFILE_TIMETABLE = "https://pro.kansk-tc.ru/blocks/psm_desktop/desktop_lib.php?dirroot=/www/procollege"
 BLOG_PAGE = "https://pro.kansk-tc.ru/blog/index.php"
+PROFILE_PAGE = "https://pro.kansk-tc.ru/user/profile.php"
 
 
 CORE_MESSAGE_GET_CONVERSATIONS = 'core_message_get_conversations'

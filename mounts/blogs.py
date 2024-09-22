@@ -36,7 +36,6 @@ async def get_all_blogs(access_token):
                             'type': 'image',
                             'src': i.get('src')
                         })
-            print(data)
             posts.append(data)
     await session.close()
     return posts
@@ -68,7 +67,6 @@ async def get_blogs_by_user_id(user_id: int, access_token):
                             'type': 'image',
                             'src': i.get('src')
                         })
-            print(data)
             posts.append(data)
     await session.close()
     return posts

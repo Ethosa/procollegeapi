@@ -3,12 +3,14 @@ from fastapi.responses import JSONResponse
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 
+from urllib.parse import quote_plus
+
 from api import (
     LOGIN_URL, USER_AGENT_HEADERS,
     MY_DESKTOP, CORE_MESSAGE_GET_CONVERSATIONS,
-    SERVICE, PROFILE_TIMETABLE
+    SERVICE, PROFILE_TIMETABLE, PROFILE_PAGE
 )
-from models.user import LoginUser
+from models.user import LoginUser, EditUser
 from utils import error, headers, check_auth
 
 
@@ -128,6 +130,78 @@ async def get_user_info(access_token: str):
         'today': today,
         'courses': courses
     }
+
+
+@user_app.get('/profile')
+async def get_user_profile(access_token: str):
+    if isinstance(_headers := await check_auth(access_token), JSONResponse):
+        return _headers
+    session = ClientSession()
+    profile_data = {}
+    async with session.get(PROFILE_PAGE, headers=_headers) as response:
+        page_data = BeautifulSoup(await response.text())
+        user_image = page_data.find('img', {'class': 'userpicture'})
+        if user_image is not None and user_image.img is not None:
+            profile_data['image'] = user_image.get('src')
+        profile_data['full_name'] = page_data.find('li', {'class': 'fullname'}).text.strip()
+        email_data = page_data.find('li', {'class': 'email'})
+        if email_data is not None:
+            profile_data['email'] = email_data.dl.dd.text.strip()
+        interests_data = page_data.find('li', {'class': 'interests'})
+        if interests_data is not None:
+            interests = []
+            for li in interests_data.find_all('li'):
+                interests.append(li.text.strip())
+            profile_data['interests'] = interests
+        profile_description_node = page_data.find('li', {'class': 'description'})
+        if profile_description_node is not None:
+            profile_data['description'] = profile_description_node.dl.dd.encode_contents()
+        first_access_request = page_data.find('li', {'class': 'firstaccess'})
+        if first_access_request is not None:
+            profile_data['first_access_request'] = first_access_request.dl.dd.text.strip()
+        last_access_request = page_data.find('li', {'class': 'lastaccess'})
+        if last_access_request is not None:
+            profile_data['first_access_request'] = last_access_request.dl.dd.text.strip()
+    await session.close()
+    return profile_data
+
+
+@user_app.patch('/profile')
+async def edit_user_profile(access_token: str, user_data: EditUser):
+    if isinstance(_headers := await check_auth(access_token), JSONResponse):
+        return _headers
+    session = ClientSession()
+    params = []
+    async with session.get(PROFILE_PAGE, headers=_headers) as response:
+        page_data = BeautifulSoup(await response.text()).find('div', {'id': 'adaptable-tab-editprofile'})
+        for inp in page_data.find_all('input', {'type': 'hidden'}):
+            params.append((inp.get('name'), inp.get('value')))
+        if user_data.description is None:
+            params.append(('description_editor[text]', page_data.find(
+                'input', {'name': 'description_editor[text]'}
+            ).get('value')))
+        else:
+            params.append(('description_editor[text]', user_data.description))
+        if user_data.city is None:
+            params.append(('city', page_data.find('input', {'name': 'city'}).get('value')))
+        else:
+            params.append(('city', user_data.city))
+        if user_data.interests is None:
+            for i in page_data.find('select', {'name': 'interests[]'}).find_all('option'):
+                params.append(('interests[]', i.get('value')))
+        else:
+            for interest in user_data.interests:
+                params.append(('interests[]', interest))
+        params.append(('imagealt', page_data.find('input', {'name': 'imagealt'}).get('value')))
+        params.append(('submitbutton', 'Обновить профиль'))
+    query = []
+    for i in params:
+        query.append(quote_plus(i[0]) + '=' + quote_plus(i[1]))
+    _headers['Content-Type'] = 'application/x-www-form-urlencoded'
+    _headers['Upgrade-Insecure-Requests'] = '1'
+    await session.post('https://pro.kansk-tc.ru/user/profile.php', headers=_headers, data='&'.join(query))
+    await session.close()
+    return {'response': 'success'}
 
 
 @user_app.get('/day/{day_number:int}')
