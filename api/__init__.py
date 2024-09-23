@@ -7,6 +7,7 @@ STUDENTS_TIMETABLE_GROUP = "https://pro.kansk-tc.ru/blocks/manage_groups/website
 PROFILE_TIMETABLE = "https://pro.kansk-tc.ru/blocks/psm_desktop/desktop_lib.php?dirroot=/www/procollege"
 BLOG_PAGE = "https://pro.kansk-tc.ru/blog/index.php"
 PROFILE_PAGE = "https://pro.kansk-tc.ru/user/profile.php"
+UPLOAD_TO_REPOSITORY = "https://pro.kansk-tc.ru/repository/repository_ajax.php?action=upload"
 
 
 CORE_MESSAGE_GET_CONVERSATIONS = 'core_message_get_conversations'

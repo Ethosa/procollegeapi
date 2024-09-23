@@ -178,8 +178,8 @@ async def edit_user_profile(access_token: str, user_data: EditUser):
             params.append((inp.get('name'), inp.get('value')))
         if user_data.description is None:
             params.append(('description_editor[text]', page_data.find(
-                'input', {'name': 'description_editor[text]'}
-            ).get('value')))
+                'textarea', {'name': 'description_editor[text]'}
+            ).encode_contents()))
         else:
             params.append(('description_editor[text]', user_data.description))
         if user_data.city is None:
