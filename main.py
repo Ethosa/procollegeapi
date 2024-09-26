@@ -8,6 +8,7 @@ from mounts.teachers import teacher_app
 from mounts.blogs import blogs_app
 from mounts.timetable import timetable_app
 from mounts.media import media_app
+from mounts.news import news_app
 from middleware.file_size_limit import LimitUploadSize
 
 
@@ -22,6 +23,7 @@ app.add_middleware(
 app.add_middleware(LimitUploadSize, max_upload_size=1024 * 1024 * 3)  # 3 Mb
 
 app.mount('/user', user_app)
+app.mount('/news', news_app)
 app.mount('/branches', branches_app)
 app.mount('/teachers', teacher_app)
 app.mount('/blogs', blogs_app)

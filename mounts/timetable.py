@@ -3,7 +3,7 @@ from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 from re import match, sub
 
-from api import STUDENTS_TIMETABLE_GROUPS, STUDENTS_TIMETABLE_GROUP
+from constants import STUDENTS_TIMETABLE_GROUPS, STUDENTS_TIMETABLE_GROUP
 
 
 timetable_app = FastAPI()

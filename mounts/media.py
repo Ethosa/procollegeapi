@@ -1,17 +1,15 @@
-from fastapi import FastAPI, UploadFile
-from fastapi.responses import JSONResponse
-from aiohttp import ClientSession, MultipartWriter
-from bs4 import BeautifulSoup
-
 from json import loads
 from urllib.parse import quote_plus
 
-from api import (
+from aiohttp import ClientSession, MultipartWriter
+from bs4 import BeautifulSoup
+from fastapi import FastAPI, UploadFile
+from fastapi.responses import JSONResponse
+
+from constants import (
     UPLOAD_TO_REPOSITORY, PROFILE_PAGE
 )
-from models.user import LoginUser, EditUser
-from utils import error, headers, check_auth
-
+from utils import check_auth
 
 media_app = FastAPI()
 
@@ -21,7 +19,6 @@ async def upload_avatar(access_token: str, file: UploadFile):
     if isinstance(_headers := await check_auth(access_token), JSONResponse):
         return _headers
     session = ClientSession()
-    result = {}
     params = []
     file_data = file.file.read()
     async with session.get(PROFILE_PAGE, headers=_headers) as response:

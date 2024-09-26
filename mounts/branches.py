@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 
-from api import TEACHERS_TIMETABLE
+from constants import TEACHERS_TIMETABLE
 
 
 branches_app = FastAPI()

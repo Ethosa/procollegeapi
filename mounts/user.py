@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 
 from urllib.parse import quote_plus
 
-from api import (
+from constants import (
     LOGIN_URL, USER_AGENT_HEADERS,
     MY_DESKTOP, CORE_MESSAGE_GET_CONVERSATIONS,
     SERVICE, PROFILE_TIMETABLE, PROFILE_PAGE

@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 
-from api import BLOG_PAGE
+from constants import BLOG_PAGE
 from utils import check_auth
 
 
