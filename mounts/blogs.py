@@ -3,8 +3,10 @@ from fastapi.responses import JSONResponse
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 
-from constants import BLOG_PAGE
-from utils import check_auth
+from constants import BLOG_PAGE, PUBLISH_BLOG_POST
+from utils import check_auth, x_form_urlencoded
+
+from models.blog import NewBlogPost
 
 
 blogs_app = FastAPI()
@@ -70,3 +72,35 @@ async def get_blogs_by_user_id(user_id: int, access_token):
             posts.append(data)
     await session.close()
     return posts
+
+
+@blogs_app.post('/')
+async def publish_new_blog_post(post: NewBlogPost, access_token: str):
+    if isinstance(_headers := await check_auth(access_token), JSONResponse):
+        return _headers
+    data = {
+        'action': 'add',
+        'submitbutton': 'Сохранить',
+        'subject': post.title,
+        'summary_editor[text]': post.text,
+    }
+    session = ClientSession()
+
+    async with session.get("https://pro.kansk-tc.ru/blog/edit.php?action=add", headers=_headers) as resp:
+        page_data = BeautifulSoup(await resp.text())
+        for i in page_data.find(
+                'form', {'action': 'https://pro.kansk-tc.ru/blog/edit.php'}
+        ).find_all('input', {'type': 'hidden'}):
+            data[i.get('name')] = i.get('value')
+
+    data['tags'] = post.tags
+    data['publishstate'] = 'draft' if post.is_draft else 'site'
+
+    _headers['Content-Type'] = 'application/x-www-form-urlencoded'
+    query = x_form_urlencoded(data)
+
+    print(query)
+
+    await session.post(PUBLISH_BLOG_POST, headers=_headers, data=query)
+    await session.close()
+    return {'response': 'success'}

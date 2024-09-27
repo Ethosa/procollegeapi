@@ -1,4 +1,5 @@
 from re import match, M
+from urllib.parse import quote_plus
 
 from fastapi.responses import JSONResponse
 from aiohttp import ClientSession
@@ -59,6 +60,23 @@ async def check_auth(access_token) -> JSONResponse | dict:
             if page_data.find('div', id='nav-notification-popover-container') is None:
                 _headers = error("Истек срок действия вашего токена", 401)
     return _headers
+
+
+def to_query_param(key: str, val: list[str] | str) -> str:
+    if isinstance(val, list):
+        new_key = quote_plus(f'{key}[]')
+        return '&'.join([
+            new_key + '=' + quote_plus(i)
+            for i in val
+        ])
+    return quote_plus(key) + '=' + quote_plus(val)
+
+
+def x_form_urlencoded(data: dict) -> str:
+    return '&'.join([
+        to_query_param(i, data[i])
+        for i in data.keys()
+    ])
 
 
 def beautify_src(link: str, root: str):

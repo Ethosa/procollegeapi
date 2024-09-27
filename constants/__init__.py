@@ -9,6 +9,8 @@ BLOG_PAGE = "https://pro.kansk-tc.ru/blog/index.php"
 PROFILE_PAGE = "https://pro.kansk-tc.ru/user/profile.php"
 UPLOAD_TO_REPOSITORY = "https://pro.kansk-tc.ru/repository/repository_ajax.php?action=upload"
 MAIN_WEBSITE = "http://www.kansk-tc.ru"
+MAIN_WEBSITE_ALL_NEWS = "http://www.kansk-tc.ru/novosti/"
+PUBLISH_BLOG_POST = "https://pro.kansk-tc.ru/blog/edit.php"
 
 
 CORE_MESSAGE_GET_CONVERSATIONS = 'core_message_get_conversations'
