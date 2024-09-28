@@ -11,6 +11,7 @@ UPLOAD_TO_REPOSITORY = "https://pro.kansk-tc.ru/repository/repository_ajax.php?a
 MAIN_WEBSITE = "http://www.kansk-tc.ru"
 MAIN_WEBSITE_ALL_NEWS = "http://www.kansk-tc.ru/novosti/"
 PUBLISH_BLOG_POST = "https://pro.kansk-tc.ru/blog/edit.php"
+ATTACH_FILES_TO_BLOG = "https://pro.kansk-tc.ru/repository/draftfiles_ajax.php?action=list"
 
 
 CORE_MESSAGE_GET_CONVERSATIONS = 'core_message_get_conversations'
