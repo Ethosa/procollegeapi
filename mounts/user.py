@@ -59,9 +59,9 @@ async def sign_in(user: LoginUser):
     async with session.get(MY_DESKTOP, headers=_headers) as response:
         page_data = BeautifulSoup(await response.text())
         _user_id = page_data.find('div', id='nav-notification-popover-container')
-        if user_id is not None:
+        if _user_id is not None:
             user_id = _user_id.get('data-userid')
-        else:
+        if user_id is None:
             await session.close()
             return error('Произошла неизвестная ошибка, попробуйте позже.')
     await session.close()
