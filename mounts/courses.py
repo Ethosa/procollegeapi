@@ -10,30 +10,14 @@ from utils import check_auth
 courses_app = FastAPI()
 
 
-@courses_app.get('/branch-categories')
-async def get_branches(access_token: str):
+@courses_app.get('/')
+async def get_branch_categories(access_token: str, category_id: int | None= None):
     if isinstance(_headers := await check_auth(access_token), JSONResponse):
         return _headers
     session = ClientSession()
     result = []
-    async with session.get(COURSES_PAGE, headers=_headers) as resp:
-        page_data = BeautifulSoup(await resp.text())
-        for category in page_data.find_all('h3', {'class': 'categoryname'}):
-            result.append({
-                'id': int(category.find('a').get('href').split('categoryid=')[1]),
-                'title': category.text.strip()
-            })
-    await session.close()
-    return result
-
-
-@courses_app.get('/{category_id:int}/categories')
-async def get_branch_categories(category_id: int, access_token: str):
-    if isinstance(_headers := await check_auth(access_token), JSONResponse):
-        return _headers
-    session = ClientSession()
-    result = []
-    async with session.get(COURSES_PAGE + f'?categoryid={category_id}&perpage=1000', headers=_headers) as resp:
+    query = f'?categoryid={category_id}&perpage=1000' if category_id else f'?perpage=1000'
+    async with session.get(COURSES_PAGE + query, headers=_headers) as resp:
         page_data = BeautifulSoup(await resp.text())
         for category in page_data.find_all('h3', {'class': 'categoryname'}):
             result.append({
@@ -44,12 +28,16 @@ async def get_branch_categories(category_id: int, access_token: str):
         for category in page_data.find_all('div', {'class': 'coursebox'}):
             result.append({
                 'id': int(category.get('data-courseid')),
-                'title': category.find('h3').text.strip(),
+                'title': (
+                    category.find('h3').text.strip()
+                    if category.find('h3') else
+                    category.find('div', {'class': 'coursename'}).text.strip()
+                ),
                 'type': 'course',
                 'teachers': [{
                     'name': i.text.strip(),
                     'id': int(i.get('href').split('id=')[1].split('&')[0])
-                } for i in category.find('ul').find_all('a')]
+                } for i in category.find('ul').find_all('a')] if category.find('ul') else []
             })
     await session.close()
     return result
