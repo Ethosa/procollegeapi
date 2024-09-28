@@ -49,7 +49,6 @@ async def get_timetable_by_group_id_week(branch_id: int, group_id: int, week: in
     async with session.get(STUDENTS_TIMETABLE_GROUP, params=params) as response:
         page_data = BeautifulSoup(await response.text())
         result['header'] = page_data.find('div', {'class': 'header'}).text.strip()
-        print(page_data.find('div', {'class': 'weekHeader'}).span.text.strip())
         result['current_week'] = int(sub(
             r'\D+', '', page_data.find('div', {'class': 'weekHeader'}).span.text.strip()
         ))

@@ -10,6 +10,7 @@ from mounts.timetable import timetable_app
 from mounts.media import media_app
 from mounts.news import news_app
 from middleware.file_size_limit import LimitUploadSize
+from middleware.error_handler import catch_exceptions_middleware
 
 
 app = FastAPI()
@@ -21,6 +22,7 @@ app.add_middleware(
     allow_credentials=True
 )
 app.add_middleware(LimitUploadSize, max_upload_size=1024 * 1024 * 3)  # 3 Mb
+app.middleware('http')(catch_exceptions_middleware)
 
 app.mount('/user', user_app)
 app.mount('/news', news_app)
