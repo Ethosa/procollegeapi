@@ -12,7 +12,7 @@ teacher_app = FastAPI()
 async def get_teachers_by_branch_id(branch_id: int):
     session = ClientSession()
     teachers = []
-    async with session.get(TEACHERS_TIMETABLE + f'?dep={branch_id}') as response:
+    async with session.get(TEACHERS_TIMETABLE) as response:
         page_data = BeautifulSoup(await response.text())
         for option in page_data.find('select', id='prep').find_all('option'):
             if option.get('value') == '0':

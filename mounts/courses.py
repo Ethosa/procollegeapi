@@ -43,9 +43,13 @@ async def get_branch_categories(category_id: int, access_token: str):
             })
         for category in page_data.find_all('div', {'class': 'coursebox'}):
             result.append({
-                'id': int(category.find('h3').find('a').get('href').split('id=')[1]),
+                'id': int(category.get('data-courseid')),
                 'title': category.find('h3').text.strip(),
-                'type': 'course'
+                'type': 'course',
+                'teachers': [{
+                    'name': i.text.strip(),
+                    'id': int(i.get('href').split('id=')[1].split('&')[0])
+                } for i in category.find('ul').find_all('a')]
             })
     await session.close()
     return result
