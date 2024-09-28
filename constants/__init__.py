@@ -12,6 +12,7 @@ MAIN_WEBSITE = "http://www.kansk-tc.ru"
 MAIN_WEBSITE_ALL_NEWS = "http://www.kansk-tc.ru/novosti/"
 PUBLISH_BLOG_POST = "https://pro.kansk-tc.ru/blog/edit.php"
 ATTACH_FILES_TO_BLOG = "https://pro.kansk-tc.ru/repository/draftfiles_ajax.php?action=list"
+COURSES_PAGE = "https://pro.kansk-tc.ru/course/index.php"
 
 
 CORE_MESSAGE_GET_CONVERSATIONS = 'core_message_get_conversations'

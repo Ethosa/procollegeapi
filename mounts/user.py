@@ -28,7 +28,7 @@ async def sign_in(user: LoginUser):
             form_data = page_data.find('form', id='login')
             login_token = form_data.find('input', {'name': 'logintoken'}).get('value')
     except Exception as e:
-        print(e)
+        print('after login url', e)
     if not login_token:
         await session.close()
         return error('Произошла неизвестная ошибка, попробуйте позже.')
@@ -53,14 +53,14 @@ async def sign_in(user: LoginUser):
             await session.close()
             return error(err.text.strip())
     except Exception as e:
-        print(e)
+        print('after post login url', e)
         await session.close()
         return error('Произошла неизвестная ошибка, попробуйте позже.')
     async with session.get(MY_DESKTOP, headers=_headers) as response:
         page_data = BeautifulSoup(await response.text())
-        user_id = page_data.find('div', id='nav-notification-popover-container')
+        _user_id = page_data.find('div', id='nav-notification-popover-container')
         if user_id is not None:
-            user_id = user_id.get('data-userid')
+            user_id = _user_id.get('data-userid')
         else:
             await session.close()
             return error('Произошла неизвестная ошибка, попробуйте позже.')

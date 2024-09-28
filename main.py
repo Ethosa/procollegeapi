@@ -9,6 +9,7 @@ from mounts.blogs import blogs_app
 from mounts.timetable import timetable_app
 from mounts.media import media_app
 from mounts.news import news_app
+from mounts.courses import courses_app
 from middleware.file_size_limit import LimitUploadSize
 from middleware.error_handler import catch_exceptions_middleware
 
@@ -26,6 +27,7 @@ app.middleware('http')(catch_exceptions_middleware)
 
 app.mount('/user', user_app)
 app.mount('/news', news_app)
+app.mount('/courses', courses_app)
 app.mount('/branches', branches_app)
 app.mount('/teachers', teacher_app)
 app.mount('/blogs', blogs_app)
