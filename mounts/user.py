@@ -24,7 +24,10 @@ async def sign_in(user: LoginUser):
     session = ClientSession()
     try:
         async with session.get(LOGIN_URL, headers=USER_AGENT_HEADERS) as response:
-            page_data = BeautifulSoup(await response.text())
+            data = await response.text()
+            page_data = BeautifulSoup(data)
+            with open('login_page.html', 'w', encoding='utf-8') as f:
+                f.write(data)
             form_data = page_data.find('form', id='login')
             login_token = form_data.find('input', {'name': 'logintoken'}).get('value')
     except Exception as e:
