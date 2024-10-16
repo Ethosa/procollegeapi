@@ -16,6 +16,8 @@ COURSES_PAGE = "https://pro.kansk-tc.ru/course/index.php"
 
 
 CORE_MESSAGE_GET_CONVERSATIONS = 'core_message_get_conversations'
+CORE_MESSAGE_GET_CONVERSATION_MESSAGES = 'core_message_get_conversation_messages'
+CORE_MESSAGE_SEND_MESSAGES_TO_CONVERSATION = 'core_message_send_messages_to_conversation'
 
 
 USER_AGENT_HEADERS = {
