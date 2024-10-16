@@ -25,25 +25,10 @@ async def sign_in(user: LoginUser):
     already_authed: bool= False
     token: str | None = None
     try:
+        if 'Cookie' in USER_AGENT_HEADERS:
+            del USER_AGENT_HEADERS['Cookie']
         async with session.get(LOGIN_URL, headers=USER_AGENT_HEADERS) as response:
             data = await response.text()
-            _headers = response.headers
-            print(response.headers)
-            with open('additional-data.html', 'w', encoding='utf-8') as f:
-                f.write(str(USER_AGENT_HEADERS) + '\n\n\n\n\n' + '\n'.join({
-                    i[0]: str(i[1])
-                    for i in session.headers.items()
-                }))
-            with open('login_page.html', 'w', encoding='utf-8') as f:
-                f.write(data)
-            with open('response.html', 'w', encoding='utf-8') as f:
-                f.write(str(response.raw_headers))
-            if _headers and 'Set-Cookie' in _headers:
-                for header in _headers['Set-Cookie'].split(';'):
-                    if header.startswith('MoodleSession'):
-                        key, value = header.split('=')
-                        token = key.replace('MoodleSession', '') + ':' + value
-                        break
             page_data = BeautifulSoup(data)
             if token and page_data.find('form', {'action': 'https://pro.kansk-tc.ru/login/logout.php'}):
                 already_authed = True
@@ -52,20 +37,6 @@ async def sign_in(user: LoginUser):
                 login_token = form_data.find('input', {'name': 'logintoken'}).get('value')
     except Exception as e:
         print('after login url', e)
-    if already_authed:
-        async with session.get(MY_DESKTOP, headers=_headers) as response:
-            page_data = BeautifulSoup(await response.text())
-            _user_id = page_data.find('div', id='nav-notification-popover-container')
-            if _user_id is not None:
-                user_id = _user_id.get('data-userid')
-            if user_id is None:
-                await session.close()
-                return error('Произошла неизвестная ошибка, попробуйте позже.')
-        await session.close()
-        return {
-            'access_token': token,
-            'user_id': int(user_id) if user_id else 0
-        }
     if not login_token:
         await session.close()
         return error('Произошла неизвестная ошибка, попробуйте позже.')
