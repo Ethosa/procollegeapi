@@ -29,6 +29,15 @@ async def sign_in(user: LoginUser):
             data = await response.text()
             _headers = response.headers
             print(response.headers)
+            with open('additional-data.html', 'w', encoding='utf-8') as f:
+                f.write(str(USER_AGENT_HEADERS) + '\n\n\n\n\n' + '\n'.join({
+                    i[0]: str(i[1])
+                    for i in session.headers.items()
+                }))
+            with open('login_page.html', 'w', encoding='utf-8') as f:
+                f.write(data)
+            with open('response.html', 'w', encoding='utf-8') as f:
+                f.write(str(response.raw_headers))
             if _headers and 'Set-Cookie' in _headers:
                 for header in _headers['Set-Cookie'].split(';'):
                     if header.startswith('MoodleSession'):
