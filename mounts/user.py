@@ -27,12 +27,13 @@ async def sign_in(user: LoginUser):
     try:
         async with session.get(LOGIN_URL, headers=USER_AGENT_HEADERS) as response:
             data = await response.text()
-            _headers = response.headers['Set-Cookie'].split(';')
-            for header in _headers:
-                if header.startswith('MoodleSession'):
-                    key, value = header.split('=')
-                    token = key.replace('MoodleSession', '') + ':' + value
-                    break
+            _headers = response.headers['Set-Cookie']
+            if _headers:
+                for header in _headers.split(';'):
+                    if header.startswith('MoodleSession'):
+                        key, value = header.split('=')
+                        token = key.replace('MoodleSession', '') + ':' + value
+                        break
             page_data = BeautifulSoup(data)
             if page_data.find('form', {'action': 'https://pro.kansk-tc.ru/login/logout.php'}):
                 already_authed = True
