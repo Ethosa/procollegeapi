@@ -36,7 +36,7 @@ async def sign_in(user: LoginUser):
                         token = key.replace('MoodleSession', '') + ':' + value
                         break
             page_data = BeautifulSoup(data)
-            if page_data.find('form', {'action': 'https://pro.kansk-tc.ru/login/logout.php'}):
+            if token and page_data.find('form', {'action': 'https://pro.kansk-tc.ru/login/logout.php'}):
                 already_authed = True
             else:
                 form_data = page_data.find('form', id='login')
