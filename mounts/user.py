@@ -27,9 +27,10 @@ async def sign_in(user: LoginUser):
     try:
         async with session.get(LOGIN_URL, headers=USER_AGENT_HEADERS) as response:
             data = await response.text()
-            _headers = response.headers['Set-Cookie']
-            if _headers:
-                for header in _headers.split(';'):
+            _headers = response.headers
+            print(response.headers)
+            if _headers and 'Set-Cookie' in _headers:
+                for header in _headers['Set-Cookie'].split(';'):
                     if header.startswith('MoodleSession'):
                         key, value = header.split('=')
                         token = key.replace('MoodleSession', '') + ':' + value
