@@ -50,6 +50,8 @@ async def check_auth(access_token) -> JSONResponse | dict:
     """
     if not access_token:
         return error('Вы не авторизованы')
+    if ':' not in access_token:
+        return error('Токен неправильный')
     moodle = get_moodle(access_token)
     _headers = headers({
         'Cookie': moodle['cookie']

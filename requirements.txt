@@ -5,3 +5,4 @@ beautifulsoup4~=4.12.3
 starlette~=0.38.5
 markdownify~=0.13.1
 python-multipart
+starlette>=0.40.0
