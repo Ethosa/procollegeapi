@@ -11,6 +11,7 @@ from mounts.media import media_app
 from mounts.news import news_app
 from mounts.courses import courses_app
 from mounts.messages import messages_app
+from mounts.notifications import notifications_app
 from middleware.file_size_limit import LimitUploadSize
 from middleware.error_handler import catch_exceptions_middleware
 
@@ -35,3 +36,4 @@ app.mount('/blogs', blogs_app)
 app.mount('/timetable', timetable_app)
 app.mount('/messages', messages_app)
 app.mount('/media', media_app)
+app.mount('/notifications', notifications_app)

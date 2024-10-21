@@ -13,11 +13,14 @@ MAIN_WEBSITE_ALL_NEWS = "http://www.kansk-tc.ru/novosti/"
 PUBLISH_BLOG_POST = "https://pro.kansk-tc.ru/blog/edit.php"
 ATTACH_FILES_TO_BLOG = "https://pro.kansk-tc.ru/repository/draftfiles_ajax.php?action=list"
 COURSES_PAGE = "https://pro.kansk-tc.ru/course/index.php"
+NOTIFICATIONS_PAGE = "https://pro.kansk-tc.ru/message/output/popup/notifications.php"
+GET_NOTIFICATIONS_PAGE = "https://pro.kansk-tc.ru/lib/ajax/service.php"
 
 
 CORE_MESSAGE_GET_CONVERSATIONS = 'core_message_get_conversations'
 CORE_MESSAGE_GET_CONVERSATION_MESSAGES = 'core_message_get_conversation_messages'
 CORE_MESSAGE_SEND_MESSAGES_TO_CONVERSATION = 'core_message_send_messages_to_conversation'
+MESSAGE_POPUP_GET_POPUP_NOTIFICATIONS = "message_popup_get_popup_notifications"
 
 
 USER_AGENT_HEADERS = {
