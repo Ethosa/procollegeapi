@@ -6,6 +6,7 @@ from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 
 from constants import USER_AGENT_HEADERS, MY_DESKTOP
+from cache import UsersCache
 
 
 def error(message: str, status_code: int = 400) -> JSONResponse:

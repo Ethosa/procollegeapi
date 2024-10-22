@@ -12,6 +12,7 @@ from constants import (
 )
 from models.user import LoginUser, EditUser
 from utils import error, headers, check_auth
+from cache import UsersCache
 
 
 user_app = FastAPI()
@@ -72,6 +73,74 @@ async def sign_in(user: LoginUser):
             await session.close()
             return error('Произошла неизвестная ошибка, попробуйте позже.')
     await session.close()
+    UsersCache.data[token] = [user, int(user_id) if user_id else 0]
+    print(UsersCache.data)
+    return {
+        'access_token': token,
+        'user_id': int(user_id) if user_id else 0
+    }
+
+
+@user_app.get('/refresh')
+async def sign_in(access_token: str):
+    session = ClientSession()
+    user_id: str | None = None
+    token: str | None = None
+    already_authed: bool = False
+    login_token: str | None = None
+    if access_token not in UsersCache.data:
+        return error('Токен не валиден')
+    user = UsersCache.data[access_token][0]
+    try:
+        if 'Cookie' in USER_AGENT_HEADERS:
+            del USER_AGENT_HEADERS['Cookie']
+        async with session.get(LOGIN_URL, headers=USER_AGENT_HEADERS) as response:
+            data = await response.text()
+            page_data = BeautifulSoup(data)
+            if token and page_data.find('form', {'action': 'https://pro.kansk-tc.ru/login/logout.php'}):
+                already_authed = True
+            else:
+                form_data = page_data.find('form', id='login')
+                login_token = form_data.find('input', {'name': 'logintoken'}).get('value')
+    except Exception as e:
+        print('after login url', e)
+    if not login_token:
+        await session.close()
+        return error('Произошла неизвестная ошибка, попробуйте позже.')
+    _headers = headers()
+    try:
+        err = None
+        async with session.post(LOGIN_URL, headers=USER_AGENT_HEADERS, data={
+            'anchor': '',
+            'logintoken': login_token,
+            'username': user.login,
+            'password': user.password
+        }) as response:
+            cookies = session.cookie_jar.filter_cookies('https://pro.kansk-tc.ru')
+            for key, val in cookies.items():
+                _headers['Cookie'] = val.value
+                token = key.replace('MoodleSession', '') + ':' + val.value
+            page_data = BeautifulSoup(await response.text())
+            if page_data is not None:
+                err = page_data.find('a', {'id': 'loginerrormessage'})
+        if err is not None:
+            await session.close()
+            return error(err.text.strip())
+    except Exception as e:
+        print('after post login url', e)
+        await session.close()
+        return error('Произошла неизвестная ошибка, попробуйте позже.')
+    async with session.get(MY_DESKTOP, headers=_headers) as response:
+        page_data = BeautifulSoup(await response.text())
+        _user_id = page_data.find('div', id='nav-notification-popover-container')
+        if _user_id is not None:
+            user_id = _user_id.get('data-userid')
+        if user_id is None:
+            await session.close()
+            return error('Произошла неизвестная ошибка, попробуйте позже.')
+    await session.close()
+    del UsersCache.data[access_token]
+    UsersCache.data[token] = int(user_id) if user_id else 0
     return {
         'access_token': token,
         'user_id': int(user_id) if user_id else 0
