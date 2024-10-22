@@ -15,6 +15,7 @@ ATTACH_FILES_TO_BLOG = "https://pro.kansk-tc.ru/repository/draftfiles_ajax.php?a
 COURSES_PAGE = "https://pro.kansk-tc.ru/course/index.php"
 NOTIFICATIONS_PAGE = "https://pro.kansk-tc.ru/message/output/popup/notifications.php"
 GET_NOTIFICATIONS_PAGE = "https://pro.kansk-tc.ru/lib/ajax/service.php"
+GALLERY_PAGE = "http://www.kansk-tc.ru/zhizn_kolledzha/fotogalereya"
 
 
 CORE_MESSAGE_GET_CONVERSATIONS = 'core_message_get_conversations'
