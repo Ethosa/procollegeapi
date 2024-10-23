@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 
-from constants import COURSES_PAGE
+from constants import COURSES_PAGE, MY_DESKTOP
 from utils import check_auth
 
 
@@ -11,7 +11,7 @@ courses_app = FastAPI()
 
 
 @courses_app.get('/')
-async def get_branch_categories(access_token: str, category_id: int | None= None):
+async def get_branch_categories(access_token: str, category_id: int | None = None):
     if isinstance(_headers := await check_auth(access_token), JSONResponse):
         return _headers
     session = ClientSession()
@@ -38,6 +38,23 @@ async def get_branch_categories(access_token: str, category_id: int | None= None
                     'name': i.text.strip(),
                     'id': int(i.get('href').split('id=')[1].split('&')[0])
                 } for i in category.find('ul').find_all('a')] if category.find('ul') else []
+            })
+    await session.close()
+    return result
+
+
+@courses_app.get('/my')
+async def get_my_courses(access_token: str):
+    if isinstance(_headers := await check_auth(access_token), JSONResponse):
+        return _headers
+    session = ClientSession()
+    result = []
+    async with session.get(MY_DESKTOP, headers=_headers) as resp:
+        page_data = BeautifulSoup(await resp.text())
+        for course in page_data.find('ul', {'id': 'dropdownmain-navigation0'}).find_all('li'):
+            result.append({
+                'id': int(course.find('a').get('href').split('id=')[1].strip()),
+                'title': course.find('a').text.strip(),
             })
     await session.close()
     return result
