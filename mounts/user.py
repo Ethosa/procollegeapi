@@ -159,7 +159,8 @@ async def get_user_info(access_token: str):
         page_data = BeautifulSoup(await response.text())
         main_info_div = page_data.find('div', id='d-info')
         for i in main_info_div.find_all('tr'):
-            main_info[i.th.text] = i.td.text.strip()
+            if i.th is not None and i.td is not None:
+                main_info[i.th.text] = i.td.text.strip()
         user_menu = page_data.find('a', id='usermenu')
         if user_menu is not None:
             user_info['name'] = user_menu.span.text.strip()
@@ -171,7 +172,6 @@ async def get_user_info(access_token: str):
                 'courses': []
             }
             for c in course.find_all('div', {'class': 'course-container'}):
-                # print(c.contents[-1])
                 data['courses'].append({
                     'title': c.a.text.strip(),
                     'teacher': c.contents[-1].strip()
@@ -207,6 +207,19 @@ async def get_user_info(access_token: str):
     }
 
 
+@user_app.get('/sidebar')
+async def get_user_info(access_token: str):
+    if isinstance(_headers := await check_auth(access_token), JSONResponse):
+        return _headers
+    session = ClientSession()
+    data = []
+    async with session.get(MY_DESKTOP, headers=_headers) as response:
+        page_data = BeautifulSoup(await response.text())
+
+    await session.close()
+    return data
+
+
 @user_app.get('/profile')
 async def get_user_profile(access_token: str):
     if isinstance(_headers := await check_auth(access_token), JSONResponse):
@@ -218,7 +231,13 @@ async def get_user_profile(access_token: str):
         user_image = page_data.find('img', {'class': 'userpicture'})
         if user_image is not None and user_image.img is not None:
             profile_data['image'] = user_image.get('src')
-        profile_data['full_name'] = page_data.find('li', {'class': 'fullname'}).text.strip()
+        if page_data.find('li', {'class': 'fullname'}) is not None:
+            profile_data['full_name'] = page_data.find('li', {'class': 'fullname'}).text.strip()
+        elif page_data.find('li', {'class': 'lastname'}) is not None:
+            profile_data['full_name'] = (
+                page_data.find('li', {'class': 'lastname'}).text.strip() + ' ' +
+                page_data.find('li', {'class': 'firstname'}).text.strip()
+            )
         email_data = page_data.find('li', {'class': 'email'})
         if email_data is not None:
             profile_data['email'] = email_data.dl.dd.text.strip()
