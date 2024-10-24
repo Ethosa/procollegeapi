@@ -4,7 +4,7 @@ from markdownify import markdownify
 from bs4 import BeautifulSoup
 
 from constants import MAIN_WEBSITE, MAIN_WEBSITE_ALL_NEWS
-from utils import beautify_src
+from utils import beautify_src, clean_styles
 
 
 news_app = FastAPI()
@@ -85,7 +85,7 @@ async def get_all_news(news_id: int, md: bool = False):
             'id': news_id,
             'date': page_data.find('div', {'class': 'newsinner_date'}).text.strip(),
             'title': page_data.find('strong', {'class': 'newsinner_title'}).text.strip(),
-            'content': page_data.find('span', {'class': 'newsinner_cnt'}).encode_contents(),
+            'content': clean_styles(page_data.find('span', {'class': 'newsinner_cnt'})).encode_contents(),
         }
         result['content'] = result['content'].decode('utf-8').replace('src="/', f'src="{MAIN_WEBSITE}/')
         if md:

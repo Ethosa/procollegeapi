@@ -3,10 +3,9 @@ from urllib.parse import quote_plus
 
 from fastapi.responses import JSONResponse
 from aiohttp import ClientSession
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, PageElement, NavigableString
 
-from constants import USER_AGENT_HEADERS, MY_DESKTOP
-from cache import UsersCache
+from constants import USER_AGENT_HEADERS, MY_DESKTOP, MAIN_WEBSITE
 
 
 def error(message: str, status_code: int = 400) -> JSONResponse:
@@ -86,3 +85,25 @@ def beautify_src(link: str, root: str):
     if not match(r'^https?://', link, M):
         return root + link
     return link
+
+
+def _clean_attributes(html: PageElement):
+    if isinstance(html, NavigableString):
+        return
+    html['style'] = ''
+    html['class'] = ''
+    del html['style']
+    del html['class']
+    if html.name in ['a'] and html['href'].startswith('/'):
+        html['href'] = f'{MAIN_WEBSITE}{html["href"]}'.replace(' ', '%20')
+    if html.name == 'a':
+        html['target'] = '_blank'
+    if html.name in ['img'] and html['src'].startswith('/'):
+        html['src'] = f'{MAIN_WEBSITE}{html["src"]}'.replace(' ', '%20')
+    for i in html.children:
+        _clean_attributes(i)
+
+
+def clean_styles(html: PageElement) -> PageElement:
+    _clean_attributes(html)
+    return html
