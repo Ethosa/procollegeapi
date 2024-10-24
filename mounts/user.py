@@ -173,6 +173,7 @@ async def get_user_info(access_token: str):
             }
             for c in course.find_all('div', {'class': 'course-container'}):
                 data['courses'].append({
+                    'id': int(c.a.get('href').split('id=')[1]),
                     'title': c.a.text.strip(),
                     'teacher': c.contents[-1].strip()
                 })
