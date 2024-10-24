@@ -95,11 +95,14 @@ def _clean_attributes(html: PageElement):
     del html['style']
     del html['class']
     if html.name in ['a'] and html['href'].startswith('/'):
-        html['href'] = f'{MAIN_WEBSITE}{html["href"]}'.replace(' ', '%20')
+        html['href'] = f'{MAIN_WEBSITE}{html["href"]}'
     if html.name == 'a':
         html['target'] = '_blank'
+        html['href'] = html['href'].replace(' ', '%20')
     if html.name in ['img'] and html['src'].startswith('/'):
         html['src'] = f'{MAIN_WEBSITE}{html["src"]}'.replace(' ', '%20')
+    if html.name == 'img':
+        html['src'] = html['src'].replace(' ', '%20')
     for i in html.children:
         _clean_attributes(i)
 
