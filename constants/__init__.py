@@ -16,6 +16,7 @@ COURSES_PAGE = "https://pro.kansk-tc.ru/course/index.php"
 NOTIFICATIONS_PAGE = "https://pro.kansk-tc.ru/message/output/popup/notifications.php"
 GET_NOTIFICATIONS_PAGE = "https://pro.kansk-tc.ru/lib/ajax/service.php"
 GALLERY_PAGE = "http://www.kansk-tc.ru/zhizn_kolledzha/fotogalereya"
+CONTACTS_PAGE = "http://www.kansk-tc.ru/o_kolledzhe/o_strukture_i_ob_organah_upravleniya_kolledzha"
 
 
 CORE_MESSAGE_GET_CONVERSATIONS = 'core_message_get_conversations'

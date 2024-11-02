@@ -78,16 +78,22 @@ async def get_all_news(news_id: int, md: bool = False):
     session = ClientSession()
     result = {}
 
-    async with session.get(MAIN_WEBSITE_ALL_NEWS + f'?nid={news_id}') as resp:
+    async with (session.get(MAIN_WEBSITE_ALL_NEWS + f'?nid={news_id}') as resp):
         page_data = BeautifulSoup(await resp.text())
 
+        preview = page_data.find('span', {'class': 'newsinner_cnt'}).find('img')
         result = {
             'id': news_id,
             'date': page_data.find('div', {'class': 'newsinner_date'}).text.strip(),
             'title': page_data.find('strong', {'class': 'newsinner_title'}).text.strip(),
             'content': clean_styles(page_data.find('span', {'class': 'newsinner_cnt'})).encode_contents(),
+            'preview': ''
         }
         result['content'] = result['content'].decode('utf-8').replace('src="/', f'src="{MAIN_WEBSITE}/')
+        if preview is not None:
+            result['preview'] = preview['src']
+            if result['preview'].startswith('/'):
+                result['preview'] = f"{MAIN_WEBSITE}{result['preview']}".replace(' ', '%20')
         if md:
             result['content'] = markdownify(result['content'])
 
