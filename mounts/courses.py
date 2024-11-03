@@ -3,8 +3,8 @@ from fastapi.responses import JSONResponse
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 
-from constants import COURSES_PAGE, MY_DESKTOP
-from utils import check_auth
+from constants import COURSES_PAGE, MY_DESKTOP, VIEW_PAGE
+from utils import check_auth, error, clean_styles
 
 
 courses_app = FastAPI()
@@ -56,5 +56,46 @@ async def get_my_courses(access_token: str):
                 'id': int(course.find('a').get('href').split('id=')[1].strip()),
                 'title': course.find('a').text.strip(),
             })
+    await session.close()
+    return result
+
+
+@courses_app.get('/{course_id:int}')
+async def get_course_by_id(course_id: int, access_token: str):
+    if isinstance(_headers := await check_auth(access_token), JSONResponse):
+        return _headers
+    session = ClientSession()
+    result = {
+        'title': '',
+        'topics': []
+    }
+    async with session.get(VIEW_PAGE + f'?id={course_id}', headers=_headers) as resp:
+        page_data = BeautifulSoup(await resp.text())
+        notice = page_data.find('div', {'id': 'notice'})
+        if notice is not None and notice.text.strip().lower() == 'вы не можете записаться на этот курс':
+            await session.close()
+            return error(notice.text.strip(), 403)
+        result['title'] = page_data.find('title').text.strip()
+        for topic in page_data.find('ul', {'class': 'topics'}).find_all('li', {'class': 'section'}):
+            title = topic.find('h3', {'class': 'sectionname'})
+            summary = topic.find('div', {'class': 'summary'})
+            topic_data = {
+                'title': title.text.strip(),
+                'url': title.span.a['href'],
+                'summary': clean_styles(summary).encode_contents().decode('utf-8') if summary else '',
+                'items': []
+            }
+            for li in topic.find_all('li', {'class': 'activity'}):
+                name = li.find('span', {'class': 'instancename'})
+                icon = li.find('img')
+                content_after = li.find('div', {'class': 'contentafterlink'})
+                if name is not None:
+                    topic_data['items'].append({
+                        'name': name.find(text=True, recursive=False).strip(),
+                        'icon': icon['src'] if icon else '',
+                        'view_id': int(li.find('a')['href'].split('?id=')[1]),
+                        'content-after': clean_styles(content_after).encode_contents().decode('utf-8') if content_after else '',
+                    })
+            result['topics'].append(topic_data)
     await session.close()
     return result
