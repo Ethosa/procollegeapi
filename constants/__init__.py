@@ -26,7 +26,7 @@ CORE_MESSAGE_SEND_MESSAGES_TO_CONVERSATION = 'core_message_send_messages_to_conv
 MESSAGE_POPUP_GET_POPUP_NOTIFICATIONS = "message_popup_get_popup_notifications"
 
 
-API_URL = "http://localhost:8080"
+API_URL = "http://localhost:8000"
 
 
 USER_AGENT_HEADERS = {
