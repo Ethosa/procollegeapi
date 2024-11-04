@@ -1,11 +1,11 @@
-from re import match, M
+from re import match, M, findall
 from urllib.parse import quote_plus
 
 from fastapi.responses import JSONResponse
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup, PageElement, NavigableString
 
-from constants import USER_AGENT_HEADERS, MY_DESKTOP, MAIN_WEBSITE, API_URL
+from constants import USER_AGENT_HEADERS, MY_DESKTOP, MAIN_WEBSITE, API_URL, BAD_WORDS
 
 
 def error(message: str, status_code: int = 400) -> JSONResponse:
@@ -64,6 +64,14 @@ async def check_auth(access_token) -> JSONResponse | dict:
     return _headers
 
 
+def match_bad_words(string: str) -> bool:
+    result = findall(BAD_WORDS, string)
+    for i in result:
+        if i:
+            return True
+    return False
+
+
 def to_query_param(key: str, val: list[str] | str) -> str:
     if isinstance(val, list):
         new_key = quote_plus(f'{key}[]')
@@ -89,7 +97,6 @@ def beautify_src(link: str, root: str):
 
 def proxify(link: str, access_token: str | None):
     if link.startswith('https://pro.kansk-tc.ru/pluginfile.php/1/blog/'):
-        print(access_token)
         if access_token:
             return f'{API_URL}/media/proxy/file?access_token={access_token}&link={link}'
         return f'{API_URL}/media/proxy/file?link={link}'

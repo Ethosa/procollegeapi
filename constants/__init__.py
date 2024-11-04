@@ -1,3 +1,5 @@
+from re import compile, IGNORECASE
+
 LOGIN_URL = "https://pro.kansk-tc.ru/login/index.php"
 MY_DESKTOP = "https://pro.kansk-tc.ru/my/"
 SERVICE = "https://pro.kansk-tc.ru/lib/ajax/service.php"
@@ -19,6 +21,9 @@ GALLERY_PAGE = "http://www.kansk-tc.ru/zhizn_kolledzha/fotogalereya"
 CONTACTS_PAGE = "http://www.kansk-tc.ru/o_kolledzhe/o_strukture_i_ob_organah_upravleniya_kolledzha"
 VIEW_PAGE = "https://pro.kansk-tc.ru/course/view.php"
 
+BLOG_POST_EDIT = "https://pro.kansk-tc.ru/blog/edit.php"
+DELETE_BLOG_POST = "https://pro.kansk-tc.ru/blog/edit.php?action=delete&entryid="
+
 
 CORE_MESSAGE_GET_CONVERSATIONS = 'core_message_get_conversations'
 CORE_MESSAGE_GET_CONVERSATION_MESSAGES = 'core_message_get_conversation_messages'
@@ -27,6 +32,17 @@ MESSAGE_POPUP_GET_POPUP_NOTIFICATIONS = "message_popup_get_popup_notifications"
 
 
 API_URL = "http://localhost:8000"
+
+
+BAD_WORDS = compile(
+    (
+        r'\b(бля|суч?к[аи]|шлюх[аиойеуяы]|сперма|[оа]ху[еи]ть|п[иеё]зд[ае]+ц?|ебало|ебло|ебасос|ебать|ебни|ебните'
+        r'|анал|мудак|даун|чмо|г[ао]ндон|кончен+ый|порно|г[оа]вно|мразь|nigga|чмошник|тварь|пидор|мразота|хер|'
+        r'|конча|малафья|ссыкло|мудень|обмудень|ебанутый|ебанько|тварина|падла|сучара|нацизм|ркн|'
+        r'секс|ебашьте|бля[тд][ьи]|хуй|нахуй|сво|война|ге[йи]|bitch|sex|gay|gays|bitches|anal|fuck|фак|поблядушки|)\b'
+    ),
+    IGNORECASE
+)
 
 
 USER_AGENT_HEADERS = {
