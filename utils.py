@@ -91,7 +91,7 @@ def proxify(link: str, access_token: str | None):
     if link.startswith('https://pro.kansk-tc.ru/pluginfile.php/1/blog/'):
         if access_token:
             return f'{API_URL}/media/proxy/file?access_token={access_token}&link={link}'
-        return f'{API_URL}?link={link}'
+        return f'{API_URL}/media/proxy/file?link={link}'
     return link
 
 
@@ -117,5 +117,5 @@ def _clean_attributes(html: PageElement, access_token: str | None = None):
 
 
 def clean_styles(html: PageElement, access_token: str | None = None) -> PageElement:
-    _clean_attributes(html)
+    _clean_attributes(html, access_token)
     return html
