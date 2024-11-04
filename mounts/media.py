@@ -1,15 +1,20 @@
 from json import loads
 from urllib.parse import quote_plus
+from secrets import token_hex
+from os import remove
+from os.path import splitext, exists
 
 from aiohttp import ClientSession, MultipartWriter
+from aiofiles import open
 from bs4 import BeautifulSoup
-from fastapi import FastAPI, UploadFile
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, UploadFile, Request
+from fastapi.responses import JSONResponse, FileResponse
+from starlette.background import BackgroundTask
 
 from constants import (
     UPLOAD_TO_REPOSITORY, PROFILE_PAGE
 )
-from utils import check_auth
+from utils import check_auth, error
 
 media_app = FastAPI()
 
@@ -66,3 +71,22 @@ async def upload_avatar(access_token: str, file: UploadFile):
     await session.post('https://pro.kansk-tc.ru/user/profile.php', headers=_headers, data='&'.join(query))
     await session.close()
     return {'response': 'success'}
+
+
+@media_app.get('/proxy/file')
+async def proxy_file_get(req: Request, access_token: str, link: str):
+    if isinstance(_headers := await check_auth(access_token), JSONResponse):
+        return _headers
+    session = ClientSession()
+    _, ext = splitext(link)
+    filename = f'{token_hex(32)}.{ext}' if ext else token_hex(32)
+    async with session.get(link, headers=_headers) as resp:
+        async with open(filename, 'wb') as f:
+            await f.write(await resp.content.read())
+            # async for chunk in resp.content.iter_chunked(10):
+            #     await f.write(chunk)
+    await session.close()
+    if exists(filename):
+        task = BackgroundTask(func=lambda: remove(filename))
+        return FileResponse(filename, background=task)
+    return error('', 404)

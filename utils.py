@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup, PageElement, NavigableString
 
-from constants import USER_AGENT_HEADERS, MY_DESKTOP, MAIN_WEBSITE
+from constants import USER_AGENT_HEADERS, MY_DESKTOP, MAIN_WEBSITE, API_URL
 
 
 def error(message: str, status_code: int = 400) -> JSONResponse:
@@ -87,7 +87,15 @@ def beautify_src(link: str, root: str):
     return link
 
 
-def _clean_attributes(html: PageElement):
+def proxify(link: str, access_token: str | None):
+    if link.startswith('https://pro.kansk-tc.ru/pluginfile.php/1/blog/'):
+        if access_token:
+            return f'{API_URL}?access_token={access_token}&link={link}'
+        return f'{API_URL}?link={link}'
+    return link
+
+
+def _clean_attributes(html: PageElement, access_token: str | None = None):
     if isinstance(html, NavigableString):
         return
     html['style'] = ''
@@ -103,10 +111,12 @@ def _clean_attributes(html: PageElement):
         html['src'] = f'{MAIN_WEBSITE}{html["src"]}'.replace(' ', '%20')
     if html.name == 'img':
         html['src'] = html['src'].replace(' ', '%20')
+    if html.get('src'):
+        html['src'] = proxify(html['src'], access_token)
     for i in html.children:
         _clean_attributes(i)
 
 
-def clean_styles(html: PageElement) -> PageElement:
+def clean_styles(html: PageElement, access_token: str | None = None) -> PageElement:
     _clean_attributes(html)
     return html

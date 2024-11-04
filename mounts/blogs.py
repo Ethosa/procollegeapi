@@ -5,8 +5,8 @@ from fastapi.responses import JSONResponse
 from aiohttp import ClientSession, MultipartWriter
 from bs4 import BeautifulSoup
 
-from constants import BLOG_PAGE, PUBLISH_BLOG_POST, UPLOAD_TO_REPOSITORY
-from utils import check_auth, x_form_urlencoded
+from constants import BLOG_PAGE, PUBLISH_BLOG_POST, UPLOAD_TO_REPOSITORY, API_URL
+from utils import check_auth, x_form_urlencoded, clean_styles
 from models.blog import NewBlogPost
 
 
@@ -14,12 +14,12 @@ blogs_app = FastAPI()
 
 
 @blogs_app.get('/')
-async def get_all_blogs(access_token):
+async def get_all_blogs(access_token: str, page: int = 1):
     if isinstance(_headers := await check_auth(access_token), JSONResponse):
         return _headers
     session = ClientSession()
     posts = []
-    async with session.get(BLOG_PAGE, headers=_headers) as response:
+    async with session.get(BLOG_PAGE, params={'blogpage': page-1}, headers=_headers) as response:
         page_data = BeautifulSoup(await response.text())
         for post in page_data.find_all('div', {'class': 'forumpost'}):
             data = {
@@ -28,7 +28,10 @@ async def get_all_blogs(access_token):
                 'author': post.find('div', {'class': 'author'}).a.text.strip(),
                 'date': post.find('div', {'class': 'author'}).contents[-1][2:].strip(),
                 'raw_content': str(
-                    post.find('div', {'class': 'maincontent'}).div.find('div', {'class': 'no-overflow'})
+                    clean_styles(
+                        post.find('div', {'class': 'maincontent'}).div.find('div', {'class': 'no-overflow'}),
+                        access_token
+                    ).encode_contents().decode('utf-8')
                 ),
                 'attachments': []
             }
@@ -45,12 +48,12 @@ async def get_all_blogs(access_token):
 
 
 @blogs_app.get('/{user_id:int}')
-async def get_blogs_by_user_id(user_id: int, access_token):
+async def get_blogs_by_user_id(user_id: int, access_token: str, page: int = 1):
     if isinstance(_headers := await check_auth(access_token), JSONResponse):
         return _headers
     session = ClientSession()
     posts = []
-    async with session.get(BLOG_PAGE, params={'userid': user_id}, headers=_headers) as response:
+    async with session.get(BLOG_PAGE, params={'userid': user_id, 'blogpage': page-1}, headers=_headers) as response:
         page_data = BeautifulSoup(await response.text())
         for post in page_data.find_all('div', {'class': 'forumpost'}):
             data = {
@@ -59,7 +62,10 @@ async def get_blogs_by_user_id(user_id: int, access_token):
                 'author': post.find('div', {'class': 'author'}).a.text.strip(),
                 'date': post.find('div', {'class': 'author'}).contents[-1][2:].strip(),
                 'raw_content': str(
-                    post.find('div', {'class': 'maincontent'}).div.find('div', {'class': 'no-overflow'})
+                    clean_styles(
+                        post.find('div', {'class': 'maincontent'}).div.find('div', {'class': 'no-overflow'}),
+                        access_token
+                    ).encode_contents().decode('utf-8')
                 ),
                 'attachments': []
             }
