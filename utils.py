@@ -102,16 +102,15 @@ def _clean_attributes(html: PageElement, access_token: str | None = None):
     html['class'] = ''
     del html['style']
     del html['class']
-    if html.name in ['a'] and html['href'].startswith('/'):
+    if html.get('href'):
         html['href'] = f'{MAIN_WEBSITE}{html["href"]}'
-    if html.name == 'a':
-        html['target'] = '_blank'
         html['href'] = html['href'].replace(' ', '%20')
-    if html.name in ['img'] and html['src'].startswith('/'):
-        html['src'] = f'{MAIN_WEBSITE}{html["src"]}'.replace(' ', '%20')
-    if html.name == 'img':
-        html['src'] = html['src'].replace(' ', '%20')
+        if html.name == 'a':
+            html['target'] = '_blank'
     if html.get('src'):
+        if html.name in ['img'] and html['src'].startswith('/'):
+            html['src'] = f'{MAIN_WEBSITE}{html["src"]}'.replace(' ', '%20')
+        html['src'] = html['src'].replace(' ', '%20')
         html['src'] = proxify(html['src'], access_token)
     for i in html.children:
         _clean_attributes(i)
