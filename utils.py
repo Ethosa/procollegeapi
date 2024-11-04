@@ -90,7 +90,7 @@ def beautify_src(link: str, root: str):
 def proxify(link: str, access_token: str | None):
     if link.startswith('https://pro.kansk-tc.ru/pluginfile.php/1/blog/'):
         if access_token:
-            return f'{API_URL}?access_token={access_token}&link={link}'
+            return f'{API_URL}/media/proxy/file?access_token={access_token}&link={link}'
         return f'{API_URL}?link={link}'
     return link
 
