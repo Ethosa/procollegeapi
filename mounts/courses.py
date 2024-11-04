@@ -72,11 +72,19 @@ async def get_course_by_id(course_id: int, access_token: str):
     async with session.get(VIEW_PAGE + f'?id={course_id}', headers=_headers) as resp:
         page_data = BeautifulSoup(await resp.text())
         notice = page_data.find('div', {'id': 'notice'})
+        error_message = page_data.find('p', {'class': 'errormessage'})
         if notice is not None and notice.text.strip().lower() == 'вы не можете записаться на этот курс':
             await session.close()
             return error(notice.text.strip(), 403)
+        if error_message is not None:
+            await session.close()
+            return error(error_message.text.strip(), 400)
         result['title'] = page_data.find('title').text.strip()
-        for topic in page_data.find('ul', {'class': 'topics'}).find_all('li', {'class': 'section'}):
+        topics = page_data.find('ul', {'class': 'topics'}).find_all('li', {'class': 'section'})
+        if topics is None:
+            await session.close()
+            return error('Курс указан неправильно', 400)
+        for topic in topics:
             title = topic.find('h3', {'class': 'sectionname'})
             summary = topic.find('div', {'class': 'summary'})
             topic_data = {
@@ -89,13 +97,20 @@ async def get_course_by_id(course_id: int, access_token: str):
                 name = li.find('span', {'class': 'instancename'})
                 icon = li.find('img')
                 content_after = li.find('div', {'class': 'contentafterlink'})
-                if name is not None:
-                    topic_data['items'].append({
-                        'name': name.find(text=True, recursive=False).strip(),
-                        'icon': icon['src'] if icon else '',
-                        'view_id': int(li.find('a')['href'].split('?id=')[1]),
-                        'content-after': clean_styles(content_after).encode_contents().decode('utf-8') if content_after else '',
-                    })
+                content_without_link = li.find('div', {'class': 'contentwithoutlink'})
+                link = li.find('a')
+                topic_data['items'].append({
+                    'name': name.find(text=True, recursive=False).strip() if name else '',
+                    'icon': icon['src'] if icon else '',
+                    'view_id': int(link['href'].split('?id=')[1]) if link else -1,
+                    'content_after': (
+                        clean_styles(content_after).encode_contents().decode('utf-8') if content_after else ''
+                    ),
+                    'content_without_link': (
+                        clean_styles(content_without_link).encode_contents().decode('utf-8')
+                        if content_without_link else ''
+                    ),
+                })
             result['topics'].append(topic_data)
     await session.close()
     return result
