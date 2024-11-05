@@ -40,11 +40,20 @@ async def get_all_blogs(access_token: str, page: int = 1, user_id: int | None = 
                     min_page = num
         pages = max_page
         for post in page_data.find_all('div', {'class': 'forumpost'}):
+            commands = []
+            for command in post.find('div', {'class': 'commands'}).find_all('a'):
+                if command.text.strip().lower() == 'удалить':
+                    commands.append({
+                        'id': 'delete',
+                        'text': 'Удалить',
+                        'entry_id': int(command['href'].split('entryid=')[1])
+                    })
             data = {
                 'title': post.find('div', {'class': 'topic'}).div.a.text.strip(),
                 'avatar': post.find('div', {'class': 'picture'}).a.img.get('src'),
                 'author': post.find('div', {'class': 'author'}).a.text.strip(),
                 'date': post.find('div', {'class': 'author'}).contents[-1][2:].strip(),
+                'commands': commands,
                 'raw_content': str(
                     clean_styles(
                         post.find('div', {'class': 'maincontent'}).div.find('div', {'class': 'no-overflow'}),
