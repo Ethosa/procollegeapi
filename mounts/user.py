@@ -139,7 +139,7 @@ async def sign_in(access_token: str):
             return error('Произошла неизвестная ошибка, попробуйте позже.')
     await session.close()
     del UsersCache.data[access_token]
-    UsersCache.data[token] = int(user_id) if user_id else 0
+    UsersCache.data[token] = [user, int(user_id) if user_id else 0]
     return {
         'access_token': token,
         'user_id': int(user_id) if user_id else 0
