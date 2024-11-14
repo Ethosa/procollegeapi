@@ -28,6 +28,7 @@ jobs:
         run: |
           curl \
             --data-urlencode 'chat_id=${{ secrets.TELEGRAM_CHAT_ID }}' \
+            --data-urlencode 'message_thread_id=${{ secrets.TELEGRAM_MESSAGE_THREAD_ID }}' \
             --data-urlencode 'parse_mode=markdownv2' \
             --data-urlencode $'text=🔨 *BACKEND deploy* 🔨\n\n>${{ github.event.head_commit.message }}\n_by ${{ github.actor }}_' \
             curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage"
