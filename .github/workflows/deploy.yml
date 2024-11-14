@@ -36,8 +36,6 @@ jobs:
 
       - name: Send Telegram Message
         run: |
-          
-          echo '🔨 *Backend deploy* 🔨\n\n>${{ env.escaped_message }}\n_by [${{ env.escaped_actor }}](https://github.com/${{ env.escaped_actor }})_ at `${{ env.escaped_branch }}`\n\n[commit link](${{ github.event.head_commit.url }})'
           curl \
             --data-urlencode 'chat_id=${{ secrets.TELEGRAM_CHAT_ID }}' \
             --data-urlencode 'message_thread_id=${{ secrets.TELEGRAM_MESSAGE_THREAD_ID }}' \
