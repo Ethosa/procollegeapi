@@ -24,17 +24,23 @@ jobs:
           sleep 1
           sshpass -p ${{ secrets.MACHINE_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.MACHINE_USER }}@${{ secrets.MACHINE_HOST }} "systemctl restart procollege_api"
 
+      - name: Escape bad symbols in variables
+        id: escape_vars
+        run: |
+          escaped_message=$(echo "${{ github.event.head_commit.message }}" | sed 's/[\(\)\[\]_+-*\.]/\\\\&/g')
+          escaped_actor=$(echo "${{ github.actor }}" | sed 's/[\(\)\[\]_+-*\.]/\\\\&/g')
+          escaped_branch=$(echo "${{ github.ref_name }}" | sed 's/[\(\)\[\]_+-*\.]/\\\\&/g')
+          
+          echo "escaped_message=$escaped_message"
+          
+          echo "escaped_message=$escaped_message" >> $GITHUB_ENV
+          echo "escaped_actor=$escaped_actor" >> $GITHUB_ENV
+          echo "escaped_branch=$escaped_branch" >> $GITHUB_ENV
+
       - name: Send Telegram Message
         run: |
-          message="${{ github.event.head_commit.message }}"
-          actor="${{ github.actor }}"
-          branch="${{ github.ref_name }}"
-
-          escaped_message=$(echo "$message" | sed 's/[\(\)\[\]_+-*\.]/\\\\&/g')
-          escaped_actor=$(echo "$actor" | sed 's/[\(\)\[\]_+-*\.]/\\\\&/g')
-          escaped_branch=$(echo "$branch" | sed 's/[\(\)\[\]_+-*\.]/\\\\&/g')
           
-          echo '🔨 *Backend deploy* 🔨\n\n>$escaped_message\n_by [$escaped_actor](https://github.com/$escaped_actor)_ at `$escaped_branch`\n\n[commit link](${{ github.event.head_commit.url }})'
+          echo '🔨 *Backend deploy* 🔨\n\n>${{ env.escaped_message }}\n_by [${{ env.escaped_actor }}](https://github.com/${{ env.escaped_actor }})_ at `${{ env.escaped_branch }}`\n\n[commit link](${{ github.event.head_commit.url }})'
           curl \
             --data-urlencode 'chat_id=${{ secrets.TELEGRAM_CHAT_ID }}' \
             --data-urlencode 'message_thread_id=${{ secrets.TELEGRAM_MESSAGE_THREAD_ID }}' \
