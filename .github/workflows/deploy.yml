@@ -30,5 +30,5 @@ jobs:
             --data-urlencode 'chat_id=${{ secrets.TELEGRAM_CHAT_ID }}' \
             --data-urlencode 'message_thread_id=${{ secrets.TELEGRAM_MESSAGE_THREAD_ID }}' \
             --data-urlencode 'parse_mode=markdownv2' \
-            --data-urlencode $'text=🔨 *Backend deploy* 🔨\n\n>${{ github.event.head_commit.message }}\n_by ${{ github.actor }}_\nat `$GITHUB_HEAD_REF`\n\n[see more](${{ github.event.head_commit.url }})' \
+            --data-urlencode $'text=🔨 *Backend deploy* 🔨\n\n>${{ github.event.head_commit.message }}\n_by ${{ github.actor }}_\nat `${{ github.ref_name }}`\n\n[see more](${{ github.event.head_commit.url }})' \
             curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage"
