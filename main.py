@@ -14,6 +14,7 @@ from mounts.messages import messages_app
 from mounts.notifications import notifications_app
 from mounts.photos import photos_app
 from mounts.contacts import contacts_app
+from mounts.updates import updates_app
 from middleware.file_size_limit import LimitUploadSize
 from middleware.error_handler import catch_exceptions_middleware
 
@@ -41,3 +42,4 @@ app.mount('/media', media_app)
 app.mount('/photos', photos_app)
 app.mount('/contacts', contacts_app)
 app.mount('/notifications', notifications_app)
+app.mount('/updates', updates_app)

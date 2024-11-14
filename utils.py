@@ -111,7 +111,8 @@ def _clean_attributes(html: PageElement, access_token: str | None = None):
     del html['style']
     del html['class']
     if html.get('href'):
-        html['href'] = f'{MAIN_WEBSITE}{html["href"]}'
+        if html['href'].startswith('/'):
+            html['href'] = f'{MAIN_WEBSITE}{html["href"]}'
         html['href'] = html['href'].replace(' ', '%20')
         if html.name == 'a':
             html['target'] = '_blank'
