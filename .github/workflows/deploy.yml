@@ -31,12 +31,10 @@ jobs:
           actor="${{ github.actor }}"
           branch="${{ github.ref_name }}"
 
-          bad_symbols="([[^][]](http[^()]))|[[]()~>#+=|{}.!-]"
-          
-          escaped_message=$(echo "$message" | sed 's/[[]()~>#+=|{}.!-]/\\\\&/g')
-          escaped_actor=$(echo "$actor" | sed 's/[[]()~>#+=|{}.!-]/\\\\&/g')
-          escaped_branch=$(echo "$branch" | sed 's/[[]()~>#+=|{}.!-]/\\\\&/g')
-  
+          escaped_message=$(echo "$message" | sed 's/[&~\`\*\_\[\]()#\+\-\=\|\{\}\.\!]/\\\\&/g')
+          escaped_actor=$(echo "$actor" | sed 's/[&~\`\*\_\[\]()#\+\-\=\|\{\}\.\!]/\\\\&/g')
+          escaped_branch=$(echo "$branch" | sed 's/[&~\`\*\_\[\]()#\+\-\=\|\{\}\.\!]/\\\\&/g')
+
           echo "escaped_message=$escaped_message" >> $GITHUB_ENV
           echo "escaped_actor=$escaped_actor" >> $GITHUB_ENV
           echo "escaped_branch=$escaped_branch" >> $GITHUB_ENV
