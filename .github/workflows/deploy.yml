@@ -1,0 +1,33 @@
+name: AutoDeploy For Nim 👑
+
+on:
+  push:
+    branches:
+      - 'dev'
+      - 'master'
+
+jobs:
+  deploy_dev:
+    name: "Деплой на машину 🔨"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install sshpass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sshpass
+
+      - name: Deploy to dev machine
+        run: |
+          sshpass -p ${{ secrets.MACHINE_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.MACHINE_USER }}@${{ secrets.MACHINE_HOST }} "cd /root/procollege-api && git pull"
+          sleep 1
+          sshpass -p ${{ secrets.MACHINE_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.MACHINE_USER }}@${{ secrets.MACHINE_HOST }} "systemctl restart procollege_api"
+
+      - name: Send Telegram Message
+        run: |
+          curl \
+            --data-urlencode 'chat_id=${{ secrets.TELEGRAM_CHAT_ID }}' \
+            --data-urlencode 'parse_mode=markdownv2' \
+            --data-urlencode $'text=🔨 *BACKEND deploy* 🔨\n\n>${{ github.event.head_commit.message }}\n_by ${{ github.actor }}_' \
+            curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage"

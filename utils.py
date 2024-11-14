@@ -5,7 +5,8 @@ from fastapi.responses import JSONResponse
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup, PageElement, NavigableString
 
-from constants import USER_AGENT_HEADERS, MY_DESKTOP, MAIN_WEBSITE, API_URL, BAD_WORDS
+from constants import USER_AGENT_HEADERS, MY_DESKTOP, MAIN_WEBSITE, BAD_WORDS
+from env import API_URL
 
 
 def error(message: str, status_code: int = 400) -> JSONResponse:
