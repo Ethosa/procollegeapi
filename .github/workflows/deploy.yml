@@ -27,9 +27,9 @@ jobs:
       - name: Escape bad symbols in variables
         id: escape_vars
         run: |
-          escaped_message=$(echo "${{ github.event.head_commit.message }}" | sed 's/[\(\)\[\]_+-*\.]/\\\\&/g')
-          escaped_actor=$(echo "${{ github.actor }}" | sed 's/[\(\)\[\]_+-*\.]/\\\\&/g')
-          escaped_branch=$(echo "${{ github.ref_name }}" | sed 's/[\(\)\[\]_+-*\.]/\\\\&/g')
+          escaped_message=(echo "${{ github.event.head_commit.message }}" | sed 's/[\(\)\[\]_+-*\.]/\\\\&/g')
+          escaped_actor=(echo "${{ github.actor }}" | sed 's/[\(\)\[\]_+-*\.]/\\\\&/g')
+          escaped_branch=(echo "${{ github.ref_name }}" | sed 's/[\(\)\[\]_+-*\.]/\\\\&/g')
           
           echo "escaped_message=$escaped_message"
           
