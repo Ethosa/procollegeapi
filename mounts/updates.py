@@ -1,9 +1,5 @@
-from bs4 import BeautifulSoup
 from fastapi import FastAPI
 from aiohttp import ClientSession
-from markdownify import markdownify
-
-from utils import clean_styles
 
 updates_app = FastAPI()
 
