@@ -10,7 +10,6 @@ async def check_for_updates():
 
     async with session.get('https://api.github.com/repos/horanchikk/ktc-reborn/releases') as resp:
         data = (await resp.json())[0]
-        print(data)
 
     await session.close()
 
