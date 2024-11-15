@@ -63,7 +63,7 @@ async def get_teacher_week_by_id(
         result['next'] = {i[0]: i[1] for i in list(map(query_split, next_queries))}
         result['prev'] = {i[0]: i[1] for i in list(map(query_split, previous_queries))}
         for (i, tr) in enumerate(table.find_all('tr')):
-            children = tr.find_all()
+            children = tr.find_all('td')
             if i == 0:
                 result['teacher'] = children[1].text.strip()
                 continue
@@ -78,7 +78,7 @@ async def get_teacher_week_by_id(
                         'title': children[4].text.strip(),
                     }]
                 })
-            else:
+            elif len(result['days']) > 0:
                 result['days'][-1]['lessons'].append({
                     'number': children[0].text.strip(),
                     'classroom': children[1].text.strip(),
