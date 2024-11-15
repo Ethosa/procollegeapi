@@ -12,7 +12,7 @@ from fastapi.responses import JSONResponse, FileResponse
 from starlette.background import BackgroundTask
 
 from constants import (
-    UPLOAD_TO_REPOSITORY, PROFILE_PAGE
+    UPLOAD_TO_REPOSITORY, PROFILE_PAGE, USER_AGENT_HEADERS
 )
 from utils import check_auth, error
 
@@ -74,17 +74,20 @@ async def upload_avatar(access_token: str, file: UploadFile):
 
 
 @media_app.get('/proxy/file')
-async def proxy_file_get(req: Request, access_token: str, link: str):
-    if isinstance(_headers := await check_auth(access_token), JSONResponse):
-        return _headers
+async def proxy_file_get(link: str, access_token: str = None):
     session = ClientSession()
     _, ext = splitext(link)
     filename = f'{token_hex(32)}.{ext}' if ext else token_hex(32)
-    async with session.get(link, headers=_headers) as resp:
-        async with open(filename, 'wb') as f:
-            await f.write(await resp.content.read())
-            # async for chunk in resp.content.iter_chunked(10):
-            #     await f.write(chunk)
+    if access_token:
+        if isinstance(_headers := await check_auth(access_token), JSONResponse):
+            return _headers
+        async with session.get(link, headers=_headers) as resp:
+            async with open(filename, 'wb') as f:
+                await f.write(await resp.content.read())
+    else:
+        async with session.get(link, headers=USER_AGENT_HEADERS) as resp:
+            async with open(filename, 'wb') as f:
+                await f.write(await resp.content.read())
     await session.close()
     if exists(filename):
         task = BackgroundTask(func=lambda: remove(filename))

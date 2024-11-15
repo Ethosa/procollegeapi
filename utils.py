@@ -96,12 +96,10 @@ def beautify_src(link: str, root: str):
     return link
 
 
-def proxify(link: str, access_token: str | None):
-    if link.startswith('https://pro.kansk-tc.ru/pluginfile.php/1/blog/'):
-        if access_token:
-            return f'{API_URL}/media/proxy/file?access_token={access_token}&link={link}'
-        return f'{API_URL}/media/proxy/file?link={link}'
-    return link
+def proxify(link: str, access_token: str | None = None):
+    if access_token:
+        return f'{API_URL}/media/proxy/file?access_token={access_token}&link={link}'
+    return f'{API_URL}/media/proxy/file?link={link}'
 
 
 def _clean_attributes(html: PageElement, access_token: str | None = None):

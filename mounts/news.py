@@ -4,8 +4,7 @@ from markdownify import markdownify
 from bs4 import BeautifulSoup
 
 from constants import MAIN_WEBSITE, MAIN_WEBSITE_ALL_NEWS
-from utils import beautify_src, clean_styles
-
+from utils import beautify_src, clean_styles, proxify
 
 news_app = FastAPI()
 
@@ -38,6 +37,8 @@ async def get_last_college_news(md: bool = False):
                     'preview': beautify_src(preview_image.get('src'), MAIN_WEBSITE) if preview_image else '',
                     'type': 'news'
                 }
+            if data['preview']:
+                data['preview'] = proxify(data['preview'])
             if md:
                 data['description'] = markdownify(data['description'])
             result.append(data)
@@ -65,6 +66,8 @@ async def get_all_news(page: int = 1, md: bool = False):
                 'description': description.text.strip().replace('[подробнее]', '') if description is not None else '',
                 'preview': beautify_src(preview_image.get('src'), MAIN_WEBSITE) if preview_image else '',
             }
+            if data['preview']:
+                data['preview'] = proxify(data['preview'])
             if md:
                 data['description'] = markdownify(data['description'])
             result.append(data)
@@ -93,7 +96,8 @@ async def get_all_news(news_id: int, md: bool = False):
         if preview is not None:
             result['preview'] = preview['src']
             if result['preview'].startswith('/'):
-                result['preview'] = f"{MAIN_WEBSITE}{result['preview']}".replace(' ', '%20')
+                result['preview'] = f"{MAIN_WEBSITE}{result['preview']}".replace(' ', '%20'),
+            result['preview'] = proxify(result['preview'], None)
         if md:
             result['content'] = markdownify(result['content'])
 
