@@ -137,7 +137,7 @@ async def get_classroom_free_for_week(room: str):
                 if len(days) < 6:
                     days.append({'title': day['title'], 'lessons': [
                         {
-                            'number': i+1,
+                            'number': str(i+1),
                             'available': True,
                         }
                         for i in range(7)
@@ -147,10 +147,12 @@ async def get_classroom_free_for_week(room: str):
                     days[day_index]['lessons'][lesson_index]['start'] = lesson['start']
                     days[day_index]['lessons'][lesson_index]['end'] = lesson['end']
                     if lesson['room'] == room:
-                        days[day_index]['lessons'][lesson_index]['title'] = lesson['title']
-                        days[day_index]['lessons'][lesson_index]['teacher'] = lesson['teacher']
-                        days[day_index]['lessons'][lesson_index]['group'] = (
-                            Classrooms.branches[branch_id][group_id]['name']
-                        )
-                        days[day_index]['lessons'][lesson_index]['available'] = False
+                        for i in days[day_index]['lessons']:
+                            if i['number'] == lesson['number']:
+                                i['title'] = lesson['title']
+                                i['teacher'] = lesson['teacher']
+                                i['group'] = (
+                                    Classrooms.branches[branch_id][group_id]['name']
+                                )
+                                i['available'] = False
     return days
