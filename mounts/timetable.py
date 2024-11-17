@@ -66,6 +66,8 @@ async def get_timetable_by_group_id_week(branch_id: int, group_id: int, week: in
             }
             for lesson in day.find_all('div', {'class': 'lessonBlock'}):
                 disc = list(lesson.find_all('div', {'class': 'discBlock'}))[-1]
+                if disc.find('sup', {'class': 'cancel'}):
+                    continue
                 if len(list(disc.children)) == 0:
                     continue
                 time_data = list(lesson.find('div', {'class': 'lessonTimeBlock'}).children)

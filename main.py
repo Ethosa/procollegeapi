@@ -85,6 +85,8 @@ async def check_classrooms_available():
                         try:
                             _time = lesson.find('div', {'class': 'lessonTimeBlock'}).find_all('div')
                             lesson_data = lesson.find_all('div', {'class': 'discBlock'})[-1]
+                            if lesson_data.find('sup', {'class': 'cancel'}):
+                                continue
                             classroom = lesson_data.find('div', {'class': 'discSubgroupClassroom'}).text.strip()
                             day_data['lessons'].append({
                                 'number': _time[0].text.strip(),
