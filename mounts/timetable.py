@@ -158,4 +158,6 @@ async def get_classroom_free_for_week(room: str):
                                     Classrooms.branches[branch_id][group_id]['name']
                                 )
                                 i['available'] = False
+        for day_index, day in enumerate(days):
+            days[day_index]['lessons'] = list(filter(lambda x: 'start' in x, days[day_index]['lessons']))
     return days
