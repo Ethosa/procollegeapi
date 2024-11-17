@@ -8,3 +8,9 @@ class PhotoCache:
     albums: list = []
     albums_full: dict = {}
     cache_time_secs: float = 60 * 60 * 24  # 24 hours
+
+
+class Classrooms:
+    branches = {}
+    classrooms = []
+    invalid = ['???', 'н/к', 'дот', 'ДОТ']

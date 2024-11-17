@@ -2,8 +2,11 @@ from fastapi import FastAPI
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 from re import match, sub
+from datetime import datetime
 
 from constants import STUDENTS_TIMETABLE_GROUPS, STUDENTS_TIMETABLE_GROUP
+from cache import Classrooms
+from utils import error
 
 
 timetable_app = FastAPI()
@@ -81,3 +84,44 @@ async def get_timetable_by_group_id_week(branch_id: int, group_id: int, week: in
 @timetable_app.get('/students/courses/{branch_id:int}/group/{group_id:int}')
 async def get_timetable_by_group_id(branch_id: int, group_id: int):
     return await get_timetable_by_group_id_week(branch_id, group_id, 0)
+
+
+@timetable_app.get('/classrooms')
+async def get_classrooms_list():
+    return Classrooms.classrooms
+
+
+@timetable_app.get('/classrooms/free')
+async def get_free_classrooms(day: int = -1, time: str | None = None, number: int = -1):
+    if day == -1:
+        day = datetime.today().weekday()
+        if day == 6:
+            day = 0
+    if day < 0 or day > 5:
+        return error('День недели указан неверно. Он должен быть от 0 до 5 (Пн-Сб).')
+    free_classrooms = Classrooms.classrooms[::]
+    _time = 0
+    if time is not None:
+        time_h, time_m = time.split(':', 1)
+        _time = int(time_h) * 60 * 60 + int(time_m) * 60
+    for branch_id in Classrooms.branches.keys():
+        for group_id in Classrooms.branches[branch_id].keys():
+            _day = Classrooms.branches[branch_id][group_id][day]['lessons']
+            if number == -1 and time is None:
+                for lesson in _day:
+                    if lesson['room'] in free_classrooms:
+                        free_classrooms.remove(lesson['room'])
+            elif number >= 0 and time is None:
+                for lesson in _day:
+                    if lesson['number'] == str(number) and lesson['room'] in free_classrooms:
+                        free_classrooms.remove(lesson['room'])
+            elif number == -1 and time is not None:
+                for lesson in _day:
+                    start_h, start_m = lesson['start'].split(':')
+                    end_h, end_m = lesson['end'].split(':')
+                    start_seconds = int(start_h) * 60 * 60 + int(start_m) * 60
+                    end_seconds = int(end_h) * 60 * 60 + int(end_m) * 60
+                    if start_seconds <= _time <= end_seconds:
+                        if lesson['room'] in free_classrooms:
+                            free_classrooms.remove(lesson['room'])
+    return free_classrooms
