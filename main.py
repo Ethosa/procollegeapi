@@ -69,7 +69,7 @@ async def check_classrooms_available():
         async with session.get(f'{groups}?id={branch_id}') as resp:
             page_data = BeautifulSoup(await resp.text())
             for i in page_data.find_all('span', {'class': 'group-block'}):
-                branches[branch_id][int(i['group_id'])] = []
+                branches[branch_id][int(i['group_id'])] = {'week': [], 'name': i.text.strip()}
 
     timetable = 'https://pro.kansk-tc.ru/blocks/manage_groups/website/view.php?dep=1'
     for branch_id in branches.keys():
@@ -97,7 +97,7 @@ async def check_classrooms_available():
                                 Classrooms.classrooms.append(classroom)
                         except Exception:
                             pass
-                    branches[branch_id][group_id].append(day_data)
+                    branches[branch_id][group_id]['week'].append(day_data)
 
     Classrooms.branches = branches
     await session.close()

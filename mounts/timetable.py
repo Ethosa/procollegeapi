@@ -106,7 +106,7 @@ async def get_free_classrooms(day: int = -1, time: str | None = None, number: in
         _time = int(time_h) * 60 * 60 + int(time_m) * 60
     for branch_id in Classrooms.branches.keys():
         for group_id in Classrooms.branches[branch_id].keys():
-            _day = Classrooms.branches[branch_id][group_id][day]['lessons']
+            _day = Classrooms.branches[branch_id][group_id]['week'][day]['lessons']
             if number == -1 and time is None:
                 for lesson in _day:
                     if lesson['room'] in free_classrooms:
@@ -125,3 +125,32 @@ async def get_free_classrooms(day: int = -1, time: str | None = None, number: in
                         if lesson['room'] in free_classrooms:
                             free_classrooms.remove(lesson['room'])
     return free_classrooms
+
+
+@timetable_app.get('/classrooms/room/{room:str}')
+async def get_classroom_free_for_week(room: str):
+    days = []
+
+    for branch_id in Classrooms.branches.keys():
+        for group_id in Classrooms.branches[branch_id].keys():
+            for day_index, day in enumerate(Classrooms.branches[branch_id][group_id]['week']):
+                if len(days) < 6:
+                    days.append({'title': day['title'], 'lessons': [
+                        {
+                            'number': i+1,
+                            'available': True,
+                        }
+                        for i in range(7)
+                    ]})
+                _day = day.copy()
+                for lesson_index, lesson in enumerate(_day['lessons']):
+                    days[day_index]['lessons'][lesson_index]['start'] = lesson['start']
+                    days[day_index]['lessons'][lesson_index]['end'] = lesson['end']
+                    if lesson['room'] == room:
+                        days[day_index]['lessons'][lesson_index]['title'] = lesson['title']
+                        days[day_index]['lessons'][lesson_index]['teacher'] = lesson['teacher']
+                        days[day_index]['lessons'][lesson_index]['group'] = (
+                            Classrooms.branches[branch_id][group_id]['name']
+                        )
+                        days[day_index]['lessons'][lesson_index]['available'] = False
+    return days
