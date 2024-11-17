@@ -84,14 +84,15 @@ async def check_classrooms_available():
                     for lesson in day.find_all('div', {'class': 'lessonBlock'}):
                         try:
                             _time = lesson.find('div', {'class': 'lessonTimeBlock'}).find_all('div')
-                            classroom = lesson.find('div', {'class': 'discSubgroupClassroom'}).text.strip()
+                            lesson_data = lesson.find_all('div', {'class': 'discBlock'})[-1]
+                            classroom = lesson_data.find('div', {'class': 'discSubgroupClassroom'}).text.strip()
                             day_data['lessons'].append({
                                 'number': _time[0].text.strip(),
                                 'start': _time[1].text.strip(),
                                 'end': _time[2].text.strip(),
                                 'room': classroom,
-                                'teacher': lesson.find('div', {'class': 'discSubgroupTeacher'}).text.strip(),
-                                'title': lesson.find('div', {'class': 'discHeader'}).text.strip(),
+                                'teacher': lesson_data.find('div', {'class': 'discSubgroupTeacher'}).text.strip(),
+                                'title': lesson_data.find('div', {'class': 'discHeader'}).find('span').text.strip(),
                             })
                             if classroom not in Classrooms.classrooms and classroom not in Classrooms.invalid:
                                 Classrooms.classrooms.append(classroom)

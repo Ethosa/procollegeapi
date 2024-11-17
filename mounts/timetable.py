@@ -73,7 +73,7 @@ async def get_timetable_by_group_id_week(branch_id: int, group_id: int, week: in
                     'number': int(time_data[1].text.strip()),
                     'start': time_data[3].text.strip(),
                     'end': time_data[5].text.strip(),
-                    'title': disc.find('div', {'class': 'discHeader'}).text.strip(),
+                    'title': disc.find('div', {'class': 'discHeader'}).find('span').text.strip(),
                     'teacher': disc.find('div', {'class': 'discSubgroupTeacher'}).text.strip(),
                     'classroom': disc.find('div', {'class': 'discSubgroupClassroom'}).text.strip(),
                 }
