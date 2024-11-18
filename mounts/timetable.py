@@ -147,8 +147,9 @@ async def get_classroom_free_for_week(room: str):
                         for i in range(7)
                     ]})
                 for lesson_index, lesson in enumerate(day['lessons']):
-                    days[day_index]['lessons'][lesson_index]['start'] = lesson['start']
-                    days[day_index]['lessons'][lesson_index]['end'] = lesson['end']
+                    if lesson['number'] == days[day_index]['lessons'][lesson_index]['number']:
+                        days[day_index]['lessons'][lesson_index]['start'] = lesson['start']
+                        days[day_index]['lessons'][lesson_index]['end'] = lesson['end']
                     if lesson['room'] == room:
                         for i in days[day_index]['lessons']:
                             if i['number'] == lesson['number']:
