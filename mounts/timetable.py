@@ -1,5 +1,3 @@
-from typing import Literal
-
 from fastapi import FastAPI
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
