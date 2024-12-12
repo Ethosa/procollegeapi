@@ -1,3 +1,6 @@
+from json import dumps
+from re import sub
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.tasks import repeat_every
@@ -50,11 +53,12 @@ app.mount('/updates', updates_app)
 
 
 @app.on_event('startup')
-@repeat_every(seconds=60*60)
+@repeat_every(seconds=60*20)  # every 20 minutes
 async def check_classrooms_available():
     session = ClientSession()
 
     branches = {}
+    courses = {}
 
     # get all branches
     async with session.get('https://pro.kansk-tc.ru/blocks/manage_groups/website/view1.php') as resp:
@@ -66,16 +70,40 @@ async def check_classrooms_available():
     # get all groups by branches
     groups = 'https://pro.kansk-tc.ru/blocks/manage_groups/website/list.php'
     for branch_id in branches.keys():
+        courses[branch_id] = []
         async with session.get(f'{groups}?id={branch_id}') as resp:
             page_data = BeautifulSoup(await resp.text())
-            for i in page_data.find_all('span', {'class': 'group-block'}):
-                branches[branch_id][int(i['group_id'])] = {'week': [], 'name': i.text.strip()}
+            courses_data = list(page_data.find('div', {'class': 'content'}).children)[-2]
+            for course in courses_data.find_all('div', {'class': 'spec-year-block'}):
+                course_title = course.find('span', {'class': 'spec-year-name'}).text.strip()
+                course_data = {
+                    'title': course_title,
+                    'groups': []
+                }
+                for group in course.find_all('span', {'class': 'group-block'}):
+                    branches[branch_id][int(group['group_id'])] = {
+                        'week': [],
+                        'name': group.text.strip(),
+                        'course': course_title,
+                    }
+                    course_data['groups'].append({
+                        'id': int(group.get('group_id')),
+                        'title': group.text.strip()
+                    })
+                courses[branch_id].append(course_data)
 
     timetable = 'https://pro.kansk-tc.ru/blocks/manage_groups/website/view.php?dep=1'
     for branch_id in branches.keys():
         for group_id in branches[branch_id].keys():
             async with session.get(f'{timetable}&gr={group_id}') as resp:
                 page_data = BeautifulSoup(await resp.text())
+                info = dict()
+                info['header'] = page_data.find('div', {'class': 'header'}).text.strip()
+                info['current_week'] = int(sub(
+                    r'\D+', '', page_data.find('div', {'class': 'weekHeader'}).span.text.strip()
+                ))
+                info['next_week'] = info['current_week'] + 1
+                info['previous_week'] = max(0, info['current_week'] - 1)
                 for day in page_data.find_all('td'):
                     day_data = {
                         'title': day.find('div', {'class': 'dayHeader'}).text.strip(),
@@ -101,6 +129,11 @@ async def check_classrooms_available():
                         except Exception:
                             pass
                     branches[branch_id][group_id]['week'].append(day_data)
+                branches[branch_id][group_id]['info'] = info
 
     Classrooms.branches = branches
+    Classrooms.courses = courses
+
+    with open('branches.json', 'w', encoding='utf-8') as f:
+        f.write(dumps(branches))
     await session.close()

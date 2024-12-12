@@ -16,6 +16,9 @@ timetable_app = FastAPI()
 
 @timetable_app.get('/students/courses/{branch_id:int}')
 async def get_courses_by_branch_id(branch_id: int):
+    if Classrooms.courses:
+        return Classrooms.courses[branch_id]
+
     session = ClientSession()
     courses = []
     params = {
@@ -72,7 +75,7 @@ async def get_timetable_by_group_id_week(branch_id: int, group_id: int, week: in
                     continue
                 time_data = list(lesson.find('div', {'class': 'lessonTimeBlock'}).children)
                 lesson_data = {
-                    'number': int(time_data[1].text.strip()),
+                    'number': time_data[1].text.strip(),
                     'start': time_data[3].text.strip(),
                     'end': time_data[5].text.strip(),
                     'title': disc.find('div', {'class': 'discHeader'}).find('span').text.strip(),
@@ -87,6 +90,14 @@ async def get_timetable_by_group_id_week(branch_id: int, group_id: int, week: in
 
 @timetable_app.get('/students/courses/{branch_id:int}/group/{group_id:int}')
 async def get_timetable_by_group_id(branch_id: int, group_id: int):
+    if Classrooms.branches and branch_id in Classrooms.branches and group_id in Classrooms.branches[branch_id]:
+        return {
+            'header': Classrooms.branches[branch_id][group_id]['info']['header'],
+            'current_week': Classrooms.branches[branch_id][group_id]['info']['current_week'],
+            'next_week': Classrooms.branches[branch_id][group_id]['info']['next_week'],
+            'previous_week': Classrooms.branches[branch_id][group_id]['info']['previous_week'],
+            'days': Classrooms.branches[branch_id][group_id]['week']
+        }
     return await get_timetable_by_group_id_week(branch_id, group_id, 0)
 
 

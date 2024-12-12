@@ -12,5 +12,6 @@ class PhotoCache:
 
 class Classrooms:
     branches = {}
+    courses = {}
     classrooms = []
     invalid = ['???', 'н/к', 'дот', 'ДОТ']
