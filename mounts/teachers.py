@@ -123,4 +123,6 @@ async def get_teacher_week_by_id(
                                 result['days'][-1]['lessons'][-1]['end'] = lesson['end']
                                 break
     await session.close()
+    for day in result['days']:
+        day['lessons'] = list(filter(lambda x: x['group'], day['lessons']))
     return result
