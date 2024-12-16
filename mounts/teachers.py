@@ -3,6 +3,7 @@ from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 
 from constants import TEACHERS_TIMETABLE
+from cache import Classrooms
 
 
 teacher_app = FastAPI()
@@ -78,6 +79,22 @@ async def get_teacher_week_by_id(
                         'title': children[4].text.strip(),
                     }]
                 })
+                if Classrooms.branches:
+                    lesson_index = len(result['days'][-1]['lessons'])-1
+                    day_index = len(result['days'])-1
+                    number = result['days'][-1]['lessons'][-1]['number'].strip()
+                    group = result['days'][-1]['lessons'][-1]['group'].strip()
+                    classroom = result['days'][-1]['lessons'][-1]['classroom'].strip()
+                    for group_id in Classrooms.branches[branch_id].keys():
+                        if Classrooms.branches[branch_id][group_id]['name'] != group:
+                            continue
+                        if len(Classrooms.branches[branch_id][group_id]['week']) <= day_index:
+                            continue
+                        for lesson in Classrooms.branches[branch_id][group_id]['week'][day_index]['lessons']:
+                            if lesson['room'] == classroom and lesson['number'] == number:
+                                result['days'][-1]['lessons'][-1]['start'] = lesson['start']
+                                result['days'][-1]['lessons'][-1]['end'] = lesson['end']
+                                break
             elif len(result['days']) > 0:
                 result['days'][-1]['lessons'].append({
                     'number': children[0].text.strip(),
@@ -85,5 +102,21 @@ async def get_teacher_week_by_id(
                     'group': children[2].text.strip(),
                     'title': children[3].text.strip(),
                 })
+                if Classrooms.branches:
+                    lesson_index = len(result['days'][-1]['lessons'])-1
+                    day_index = len(result['days'])-1
+                    group = result['days'][-1]['lessons'][-1]['group'].strip()
+                    classroom = result['days'][-1]['lessons'][-1]['classroom'].strip()
+                    number = result['days'][-1]['lessons'][-1]['number'].strip()
+                    for group_id in Classrooms.branches[branch_id].keys():
+                        if Classrooms.branches[branch_id][group_id]['name'] != group:
+                            continue
+                        if len(Classrooms.branches[branch_id][group_id]['week']) <= day_index:
+                            continue
+                        for lesson in Classrooms.branches[branch_id][group_id]['week'][day_index]['lessons']:
+                            if lesson['room'] == classroom and lesson['number'] == number:
+                                result['days'][-1]['lessons'][-1]['start'] = lesson['start']
+                                result['days'][-1]['lessons'][-1]['end'] = lesson['end']
+                                break
     await session.close()
     return result
