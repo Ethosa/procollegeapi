@@ -5,12 +5,14 @@ from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 
 from constants import CONTACTS_PAGE
+from cache import cache_request
 
 
 contacts_app = FastAPI()
 
 
 @contacts_app.get('/')
+@cache_request()
 async def get_contacts():
     client = ClientSession()
     result = []

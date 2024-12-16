@@ -5,7 +5,7 @@ from re import match, sub
 from datetime import datetime
 
 from constants import STUDENTS_TIMETABLE_GROUPS, STUDENTS_TIMETABLE_GROUP
-from cache import Classrooms
+from cache import Classrooms, cache_request
 from utils import error, lessons_length
 
 
@@ -13,6 +13,7 @@ timetable_app = FastAPI()
 
 
 @timetable_app.get('/students/courses/{branch_id:int}')
+@cache_request()
 async def get_courses_by_branch_id(branch_id: int):
     if Classrooms.courses:
         return Classrooms.courses[branch_id]
@@ -41,6 +42,7 @@ async def get_courses_by_branch_id(branch_id: int):
 
 
 @timetable_app.get('/students/courses/{branch_id:int}/group/{group_id:int}/week/{week:int}')
+@cache_request()
 async def get_timetable_by_group_id_week(branch_id: int, group_id: int, week: int = -1):
     session = ClientSession()
     result = {
@@ -88,6 +90,7 @@ async def get_timetable_by_group_id_week(branch_id: int, group_id: int, week: in
 
 
 @timetable_app.get('/students/courses/{branch_id:int}/group/{group_id:int}')
+@cache_request()
 async def get_timetable_by_group_id(branch_id: int, group_id: int):
     if Classrooms.branches and branch_id in Classrooms.branches and group_id in Classrooms.branches[branch_id]:
         return {
@@ -101,11 +104,13 @@ async def get_timetable_by_group_id(branch_id: int, group_id: int):
 
 
 @timetable_app.get('/classrooms')
+@cache_request()
 async def get_classrooms_list():
     return Classrooms.classrooms
 
 
 @timetable_app.get('/classrooms/free')
+@cache_request()
 async def get_free_classrooms(day: int = -1, time: str | None = None, number: int = -1):
     if day == -1:
         day = datetime.today().weekday()
@@ -142,6 +147,7 @@ async def get_free_classrooms(day: int = -1, time: str | None = None, number: in
 
 
 @timetable_app.get('/classrooms/room/{room:str}')
+@cache_request()
 async def get_classroom_free_for_week(room: str):
     days = []
 

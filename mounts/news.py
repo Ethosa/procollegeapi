@@ -5,11 +5,13 @@ from bs4 import BeautifulSoup
 
 from constants import MAIN_WEBSITE, MAIN_WEBSITE_ALL_NEWS
 from utils import beautify_src, clean_styles, proxify
+from cache import cache_request
 
 news_app = FastAPI()
 
 
 @news_app.get('/')
+@cache_request()
 async def get_last_college_news(md: bool = False):
     session = ClientSession()
     result = []
@@ -47,6 +49,7 @@ async def get_last_college_news(md: bool = False):
 
 
 @news_app.get('/full')
+@cache_request()
 async def get_all_news(page: int = 1, md: bool = False):
     session = ClientSession()
     result = []
@@ -77,6 +80,7 @@ async def get_all_news(page: int = 1, md: bool = False):
 
 
 @news_app.get('/id{news_id:int}')
+@cache_request()
 async def get_all_news(news_id: int, md: bool = False):
     session = ClientSession()
     result = {}

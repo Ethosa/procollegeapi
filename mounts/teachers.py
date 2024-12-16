@@ -3,13 +3,14 @@ from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 
 from constants import TEACHERS_TIMETABLE
-from cache import Classrooms
+from cache import Classrooms, cache_request
 
 
 teacher_app = FastAPI()
 
 
 @teacher_app.get('/{branch_id:int}')
+@cache_request()
 async def get_teachers_by_branch_id(branch_id: int):
     session = ClientSession()
     teachers = []
@@ -35,6 +36,7 @@ def query_name_in(x: str, right_names: list[str]) -> list[str]:
 
 
 @teacher_app.get('/{branch_id:int}/id{teacher_id:int}')
+@cache_request()
 async def get_teacher_week_by_id(
         branch_id: int,
         teacher_id: int,

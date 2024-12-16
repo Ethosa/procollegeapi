@@ -12,7 +12,7 @@ from constants import (
 )
 from models.user import LoginUser, EditUser
 from utils import error, headers, check_auth
-from cache import UsersCache
+from cache import UsersCache, cache_request
 
 
 user_app = FastAPI()
@@ -147,6 +147,7 @@ async def sign_in(access_token: str):
 
 
 @user_app.get('/info')
+@cache_request()
 async def get_user_info(access_token: str):
     if isinstance(_headers := await check_auth(access_token), JSONResponse):
         return _headers
@@ -222,6 +223,7 @@ async def get_user_info(access_token: str):
 
 
 @user_app.get('/profile')
+@cache_request()
 async def get_user_profile(access_token: str):
     if isinstance(_headers := await check_auth(access_token), JSONResponse):
         return _headers
@@ -300,6 +302,7 @@ async def edit_user_profile(access_token: str, user_data: EditUser):
 
 
 @user_app.get('/day/{day_number:int}')
+@cache_request()
 async def get_timetable_for_day(access_token: str, day_number: int = 0):
     if isinstance(_headers := await check_auth(access_token), JSONResponse):
         return _headers

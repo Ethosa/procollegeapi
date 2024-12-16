@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 
-from cache import PhotoCache
+from cache import PhotoCache, cache_request
 from constants import GALLERY_PAGE, USER_AGENT_HEADERS
 
 
@@ -13,6 +13,7 @@ photos_app = FastAPI()
 
 
 @photos_app.get('/albums')
+@cache_request()
 async def get_all_albums():
     client = ClientSession()
 
@@ -33,6 +34,7 @@ async def get_all_albums():
 
 
 @photos_app.get('/{album_id:int}')
+@cache_request()
 async def get_all_albums(album_id: int):
     client = ClientSession()
 

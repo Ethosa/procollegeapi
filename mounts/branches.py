@@ -3,6 +3,7 @@ from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 
 from constants import TEACHERS_TIMETABLE
+from cache import cache_request
 
 
 branches_app = FastAPI()
@@ -17,6 +18,7 @@ def squeeze_title(title: str) -> str:
 
 
 @branches_app.get('/')
+@cache_request()
 async def get_all_branches(squeeze: bool = False):
     session = ClientSession()
     branches = []

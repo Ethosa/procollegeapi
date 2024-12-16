@@ -5,12 +5,14 @@ from bs4 import BeautifulSoup
 
 from constants import COURSES_PAGE, MY_DESKTOP, VIEW_PAGE
 from utils import check_auth, error, clean_styles
+from cache import cache_request
 
 
 courses_app = FastAPI()
 
 
 @courses_app.get('/')
+@cache_request()
 async def get_branch_categories(access_token: str, category_id: int | None = None):
     if isinstance(_headers := await check_auth(access_token), JSONResponse):
         return _headers
@@ -44,6 +46,7 @@ async def get_branch_categories(access_token: str, category_id: int | None = Non
 
 
 @courses_app.get('/my')
+@cache_request()
 async def get_my_courses(access_token: str):
     if isinstance(_headers := await check_auth(access_token), JSONResponse):
         return _headers
@@ -61,6 +64,7 @@ async def get_my_courses(access_token: str):
 
 
 @courses_app.get('/{course_id:int}')
+@cache_request()
 async def get_course_by_id(course_id: int, access_token: str):
     if isinstance(_headers := await check_auth(access_token), JSONResponse):
         return _headers
