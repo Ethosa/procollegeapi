@@ -77,6 +77,8 @@ async def get_teacher_week_by_id(
                         'classroom': children[2].text.strip(),
                         'group': children[3].text.strip(),
                         'title': children[4].text.strip(),
+                        'start': '',
+                        'end': '',
                     }]
                 })
                 if Classrooms.branches:
@@ -101,6 +103,8 @@ async def get_teacher_week_by_id(
                     'classroom': children[1].text.strip(),
                     'group': children[2].text.strip(),
                     'title': children[3].text.strip(),
+                    'start': '',
+                    'end': '',
                 })
                 if Classrooms.branches:
                     lesson_index = len(result['days'][-1]['lessons'])-1
