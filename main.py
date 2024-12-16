@@ -24,6 +24,7 @@ from middleware.file_size_limit import LimitUploadSize
 from middleware.error_handler import catch_exceptions_middleware
 
 from cache import Classrooms
+from utils import lessons_length
 
 
 app = FastAPI()
@@ -128,6 +129,7 @@ async def check_classrooms_available():
                                 Classrooms.classrooms.append(classroom)
                         except Exception:
                             pass
+                    lessons_length(day_data)
                     branches[branch_id][group_id]['week'].append(day_data)
                 branches[branch_id][group_id]['info'] = info
 

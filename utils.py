@@ -6,6 +6,7 @@ from aiohttp import ClientSession
 from bs4 import BeautifulSoup, PageElement, NavigableString
 
 from constants import USER_AGENT_HEADERS, MY_DESKTOP, MAIN_WEBSITE, BAD_WORDS
+from cache import Classrooms
 from env import API_URL
 
 
@@ -127,3 +128,23 @@ def _clean_attributes(html: PageElement, access_token: str | None = None):
 def clean_styles(html: PageElement, access_token: str | None = None) -> PageElement:
     _clean_attributes(html, access_token)
     return html
+
+
+def lessons_length(day: dict):
+    if 'lessons' not in day:
+        return
+    if len(day['lessons']) == 0:
+        day['hours'] = 0
+        day['start'] = ''
+        day['end'] = ''
+        return
+    minutes = 0
+    for lesson in day['lessons']:
+        start_hours, start_minutes = lesson['start'].split(':')
+        end_hours, end_minutes = lesson['end'].split(':')
+        start = int(start_hours)*60 + int(start_minutes)
+        end = int(end_hours)*60 + int(end_minutes)
+        minutes += end - start
+    day['hours'] = round(minutes / 60)
+    day['start'] = day['lessons'][0]['start']
+    day['end'] = day['lessons'][-1]['end']

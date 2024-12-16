@@ -6,7 +6,7 @@ from datetime import datetime
 
 from constants import STUDENTS_TIMETABLE_GROUPS, STUDENTS_TIMETABLE_GROUP
 from cache import Classrooms
-from utils import error
+from utils import error, lessons_length
 
 
 timetable_app = FastAPI()
@@ -81,6 +81,7 @@ async def get_timetable_by_group_id_week(branch_id: int, group_id: int, week: in
                     'classroom': disc.find('div', {'class': 'discSubgroupClassroom'}).text.strip(),
                 }
                 day_data['lessons'].append(lesson_data)
+            lessons_length(day_data)
             result['days'].append(day_data)
     await session.close()
     return result
