@@ -28,6 +28,7 @@ from utils import lessons_length
 
 
 app = FastAPI()
+api_app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_headers="*",
@@ -36,21 +37,23 @@ app.add_middleware(
     allow_credentials=True
 )
 app.add_middleware(LimitUploadSize, max_upload_size=1024 * 1024 * 3)  # 3 Mb
-app.middleware('http')(catch_exceptions_middleware)
+api_app.middleware('http')(catch_exceptions_middleware)
 
-app.mount('/user', user_app)
-app.mount('/news', news_app)
-app.mount('/courses', courses_app)
-app.mount('/branches', branches_app)
-app.mount('/teachers', teacher_app)
-app.mount('/blogs', blogs_app)
-app.mount('/timetable', timetable_app)
-app.mount('/messages', messages_app)
-app.mount('/media', media_app)
-app.mount('/photos', photos_app)
-app.mount('/contacts', contacts_app)
-app.mount('/notifications', notifications_app)
-app.mount('/updates', updates_app)
+api_app.mount('/user', user_app)
+api_app.mount('/news', news_app)
+api_app.mount('/courses', courses_app)
+api_app.mount('/branches', branches_app)
+api_app.mount('/teachers', teacher_app)
+api_app.mount('/blogs', blogs_app)
+api_app.mount('/timetable', timetable_app)
+api_app.mount('/messages', messages_app)
+api_app.mount('/media', media_app)
+api_app.mount('/photos', photos_app)
+api_app.mount('/contacts', contacts_app)
+api_app.mount('/notifications', notifications_app)
+api_app.mount('/updates', updates_app)
+
+app.mount('/api', api_app)
 
 
 @app.on_event('startup')
