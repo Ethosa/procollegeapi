@@ -128,7 +128,7 @@ async def check_classrooms_available():
                                 'teacher': lesson_data.find('div', {'class': 'discSubgroupTeacher'}).text.strip(),
                                 'title': lesson_data.find('div', {'class': 'discHeader'}).find('span').text.strip(),
                             })
-                            if classroom not in Classrooms.classrooms and classroom not in Classrooms.invalid:
+                            if classroom not in Classrooms.classrooms and classroom not in Classrooms.exclude:
                                 Classrooms.classrooms.append(classroom)
                         except Exception:
                             pass

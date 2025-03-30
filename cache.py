@@ -24,7 +24,7 @@ class Classrooms:
     branches = {}
     courses = {}
     classrooms = []
-    invalid = ['???', 'н/к', 'дот', 'ДОТ']
+    exclude = ['???', 'н/к', 'дот', 'ДОТ']
 
 
 def cache_request(expires: int = 60 * 60 * 10):
