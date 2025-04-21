@@ -144,7 +144,8 @@ async def check_classrooms_available():
                         except Exception:
                             pass
                     lessons_length(day_data)
-                    branches[branch_id][group_id]['week'].append(day_data)
+                    if day_data['hours'] > 0:
+                        branches[branch_id][group_id]['week'].append(day_data)
                 branches[branch_id][group_id]['info'] = info
 
     Classrooms.branches = branches
