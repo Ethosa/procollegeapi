@@ -188,6 +188,7 @@ async def get_user_info(access_token: str):
         }
         for lesson in today_data.find_all('div', {'class': 'd-lesson'}):
             lesson_time = lesson.find('div', {'class': 'lesson-time'})
+            print(lesson_time)
             if lesson_time:
                 frm = lesson_time.contents[0].text.split(':')
                 to = lesson_time.contents[-1].text.split(':')
