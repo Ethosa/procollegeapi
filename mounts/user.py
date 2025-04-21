@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from aiohttp import ClientSession
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, NavigableString
 
 import traceback
 from urllib.parse import quote_plus
@@ -188,10 +188,13 @@ async def get_user_info(access_token: str):
         }
         for lesson in today_data.find_all('div', {'class': 'd-lesson'}):
             lesson_time = lesson.find('div', {'class': 'lesson-time'})
-            print(lesson_time)
             if lesson_time:
-                frm = lesson_time.contents[0].text.split(':')
-                to = lesson_time.contents[-1].text.split(':')
+                if isinstance(lesson_time.contents[0], NavigableString):
+                    frm = lesson_time.contents[0].split(':')
+                    to = lesson_time.contents[-1].split(':')
+                else:
+                    frm = lesson_time.contents[0].text.split(':')
+                    to = lesson_time.contents[-1].text.split(':')
                 frm_minutes = int(frm[0])*60 + int(frm[1])
                 to_minutes = int(to[0])*60 + int(to[1])
                 today['minutes'] += to_minutes - frm_minutes
