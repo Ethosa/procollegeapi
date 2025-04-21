@@ -5,6 +5,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.tasks import repeat_every
 from aiohttp import ClientSession
+import collections
+collections.Callable = collections.abc.Callable
 from bs4 import BeautifulSoup
 
 from mounts.user import user_app
