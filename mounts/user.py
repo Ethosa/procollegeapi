@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 
+import traceback
 from urllib.parse import quote_plus
 
 from constants import (
@@ -37,7 +38,7 @@ async def sign_in(user: LoginUser):
                 form_data = page_data.find('form', id='login')
                 login_token = form_data.find('input', {'name': 'logintoken'}).get('value')
     except Exception as e:
-        print('after login url', e.with_traceback())
+        print('after login url', traceback.format_exc())
     if not login_token:
         await session.close()
         return error('Произошла неизвестная ошибка, попробуйте позже.')
@@ -61,7 +62,7 @@ async def sign_in(user: LoginUser):
             await session.close()
             return error(err.text.strip())
     except Exception as e:
-        print('after post login url', e.with_traceback())
+        print('after login url', traceback.format_exc())
         await session.close()
         return error('Произошла неизвестная ошибка, попробуйте позже.')
     async with session.get(MY_DESKTOP, headers=_headers) as response:
