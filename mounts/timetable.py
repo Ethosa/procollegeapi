@@ -85,6 +85,8 @@ async def get_timetable_by_group_id_week(branch_id: int, group_id: int, week: in
                 day_data['lessons'].append(lesson_data)
             lessons_length(day_data)
             result['days'].append(day_data)
+    if len(result['days']) == 0:
+        result['days'] = None
     await session.close()
     return result
 
@@ -98,7 +100,7 @@ async def get_timetable_by_group_id(branch_id: int, group_id: int):
             'current_week': Classrooms.branches[branch_id][group_id]['info']['current_week'],
             'next_week': Classrooms.branches[branch_id][group_id]['info']['next_week'],
             'previous_week': Classrooms.branches[branch_id][group_id]['info']['previous_week'],
-            'days': Classrooms.branches[branch_id][group_id]['week']
+            'days': Classrooms.branches[branch_id][group_id]['week'] if len(Classrooms.branches[branch_id][group_id]['week']) > 0 else None
         }
     return await get_timetable_by_group_id_week(branch_id, group_id, 0)
 
