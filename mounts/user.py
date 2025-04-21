@@ -61,7 +61,7 @@ async def sign_in(user: LoginUser):
             await session.close()
             return error(err.text.strip())
     except Exception as e:
-        print('after post login url', e)
+        print('after post login url', e.with_traceback())
         await session.close()
         return error('Произошла неизвестная ошибка, попробуйте позже.')
     async with session.get(MY_DESKTOP, headers=_headers) as response:
