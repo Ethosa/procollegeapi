@@ -37,7 +37,7 @@ async def sign_in(user: LoginUser):
                 form_data = page_data.find('form', id='login')
                 login_token = form_data.find('input', {'name': 'logintoken'}).get('value')
     except Exception as e:
-        print('after login url', e)
+        print('after login url', e.with_traceback())
     if not login_token:
         await session.close()
         return error('Произошла неизвестная ошибка, попробуйте позже.')
