@@ -1,6 +1,7 @@
 from json import dumps
 from re import sub
 
+import sentry_sdk
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.tasks import repeat_every
@@ -27,6 +28,14 @@ from middleware.error_handler import catch_exceptions_middleware
 
 from cache import Classrooms
 from utils import lessons_length
+
+
+sentry_sdk.init(
+    dsn="https://65e5fb73a47437246b455eb666b7ab3f@o4509189598609408.ingest.de.sentry.io/4509189608964176",
+    # Add data like request headers and IP for users,
+    # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
+    send_default_pii=True,
+)
 
 
 app = FastAPI()
