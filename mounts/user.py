@@ -200,7 +200,7 @@ async def get_user_info(access_token: str):
                 today['minutes'] += to_minutes - frm_minutes
             today['lessons'].append({
                 'number': lesson.find('div', {'class': 'lesson-number'}).text.strip(),
-                'lesson_time': [lesson_time.contents[0].text.strip(), lesson_time.contents[-1].text.strip()],
+                'lesson_time': [lesson_time.contents[0].strip(), lesson_time.contents[-1].strip()],
                 'teacher': lesson.find('div', {'class': 'lesson-group'}).text.strip(),
                 'title': lesson.find('div', {'class': 'lesson-course'}).a.text.strip(),
                 'classroom': lesson.find('div', {'class': 'lesson-classroom'}).text.strip()
