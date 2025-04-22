@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 
 from cache import PhotoCache, cache_request
 from constants import GALLERY_PAGE, USER_AGENT_HEADERS
+from utils import clean_styles
 
 
 photos_app = FastAPI()
@@ -25,6 +26,7 @@ async def get_all_albums():
             for album in page_data.find('div', {'class': 'newgallery'}).find_all('a', {'class': 'gallery_cat'}):
                 title = album.find('div', {'class': 'title'})
                 date = album.find('div', {'class': 'date'})
+                album = clean_styles(album)
                 PhotoCache.albums.append({
                     'id': int(album.get('href').split('=')[1]),
                     'title': title.text.strip() if title else '',
@@ -37,7 +39,7 @@ async def get_all_albums():
 
 @photos_app.get('/{album_id:int}')
 @cache_request()
-async def get_all_albums(album_id: int):
+async def get_album_by_id(album_id: int):
     client = ClientSession()
 
     if (
