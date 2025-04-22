@@ -31,7 +31,7 @@ async def get_all_albums():
                     'id': int(album.get('href').split('=')[1]),
                     'title': title.text.strip() if title else '',
                     'date': date.text.strip() if date else '',
-                    'preview': album.find('img').get('src'),
+                    'preview': album.find('img').get('src').replace('_mini', ''),
                 })
     await client.close()
     return PhotoCache.albums
