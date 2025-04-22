@@ -21,12 +21,15 @@ async def get_all_albums():
         PhotoCache.albums_last_update = time()
         PhotoCache.albums = []
         async with client.get(GALLERY_PAGE, headers=USER_AGENT_HEADERS) as resp:
-            page_data = BeautifulSoup(await resp.text())
-            for album in page_data.find_all('a', {'class': 'gallery_cat'}):
+            page_data = BeautifulSoup(await resp.text(), features="html5lib")
+            for album in page_data.find('div', {'class': 'newgallery'}).find_all('a', {'class': 'gallery_cat'}):
+                print(album)
+                title = album.find('div', {'class': 'title'})
+                date = album.find('div', {'class': 'date'})
                 PhotoCache.albums.append({
                     'id': int(album.get('href').split('=')[1]),
-                    'title': album.find('div', {'class': 'title'}).text.strip(),
-                    'date': album.find('div', {'class': 'date'}).text.strip(),
+                    'title': title.text.strip() if title else '',
+                    'date': date.text.strip() if date else '',
                     'preview': album.find('img').get('src'),
                 })
     await client.close()
