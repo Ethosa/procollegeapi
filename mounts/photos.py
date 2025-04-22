@@ -23,7 +23,6 @@ async def get_all_albums():
         async with client.get(GALLERY_PAGE, headers=USER_AGENT_HEADERS) as resp:
             page_data = BeautifulSoup(await resp.text(), features="html5lib")
             for album in page_data.find('div', {'class': 'newgallery'}).find_all('a', {'class': 'gallery_cat'}):
-                print(album)
                 title = album.find('div', {'class': 'title'})
                 date = album.find('div', {'class': 'date'})
                 PhotoCache.albums.append({
