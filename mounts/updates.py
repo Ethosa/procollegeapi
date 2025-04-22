@@ -5,21 +5,30 @@ updates_app = FastAPI()
 
 
 @updates_app.get('/check')
-async def check_for_updates():
-    session = ClientSession()
+async def check_for_updates(prerelease: bool = False):
+    release = {}
 
-    async with session.get('https://api.github.com/repos/horanchikk/ktc-reborn/releases') as resp:
-        data = (await resp.json())[0]
+    async with ClientSession() as session:
+        async with session.get('https://api.github.com/repos/horanchikk/ktc-reborn/releases') as resp:
+            data = await resp.json()
 
-    await session.close()
-
-    return {
-        'version': data['name'],
-        'description': data['body'],
-        'tag_info': 'last release' if not data['prerelease'] else 'pre release',
-        'apkfile': (
-            data['assets'][0]['browser_download_url']
-            if data['assets'] and data['assets'][0]['name'].endswith('.apk')
-            else ''
-        )
+            for item in data:
+                print(item)
+                print(item['prerelease'], prerelease)
+                if prerelease and item['prerelease']:
+                    release = item
+                    break
+                elif not prerelease:
+                    release = item
+                    break
+    
+    release_data = {
+        'version': release['name'],
+        'description': release['body'],
+        'tag_info': 'last release' if not release['prerelease'] else 'pre release'
     }
+    if release['assets'] and release['assets'][0]['name'].endswith('.apk'):
+        release_data['size'] = release['assets'][0]['size']
+        release_data['apkfile'] = release['assets'][0]['browser_download_url']
+
+    return release_data
