@@ -54,6 +54,7 @@ async def get_album_by_id(album_id: int):
             page_data = BeautifulSoup(await resp.text())
             PhotoCache.albums_full[album_id]['data']['title'] = page_data.find('h2').text.strip()
             for photo in page_data.find_all('a', {'class': 'gallery_prev'}):
+                photo = clean_styles(photo)
                 PhotoCache.albums_full[album_id]['data']['photos'].append(
                     photo.get('href')
                 )
