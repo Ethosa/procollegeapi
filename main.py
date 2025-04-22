@@ -1,5 +1,6 @@
 from json import dumps
 from re import sub
+from datetime import datetime, timedelta
 
 import sentry_sdk
 from fastapi import FastAPI
@@ -27,6 +28,7 @@ from middleware.file_size_limit import LimitUploadSize
 from middleware.error_handler import catch_exceptions_middleware
 
 from cache import Classrooms
+from constants import CACHE_DIR
 from utils import lessons_length
 
 
@@ -65,6 +67,21 @@ api_app.mount('/notifications', notifications_app)
 api_app.mount('/updates', updates_app)
 
 app.mount('/api', api_app)
+
+
+
+@app.on_event('startup')
+@repeat_every(seconds=60 * 1)  # каждую минуту
+async def clean_cache():
+    now = datetime.utcnow()
+    for file in CACHE_DIR.iterdir():
+        if file.is_file():
+            mtime = datetime.utcfromtimestamp(file.stat().st_mtime)
+            if now - mtime > CACHE_LIFETIME:
+                try:
+                    file.unlink()
+                except Exception as e:
+                    print(f"Failed to delete {file}: {e}")
 
 
 @app.on_event('startup')

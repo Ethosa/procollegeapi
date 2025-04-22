@@ -1,4 +1,6 @@
 from re import compile, IGNORECASE
+from pathlib import Path
+from datetime import timedelta
 
 LOGIN_URL = "https://pro.kansk-tc.ru/login/index.php"
 MY_DESKTOP = "https://pro.kansk-tc.ru/my/"
@@ -32,6 +34,11 @@ MESSAGE_POPUP_GET_POPUP_NOTIFICATIONS = "message_popup_get_popup_notifications"
 
 
 API_URL = "http://localhost:8000"
+
+
+CACHE_DIR = Path('./cache')
+CACHE_DIR.mkdir(exist_ok=True)
+CACHE_LIFETIME = timedelta(hours=24)
 
 
 BAD_WORDS = compile(

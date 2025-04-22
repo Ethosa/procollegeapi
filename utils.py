@@ -1,11 +1,12 @@
 from re import match, M, findall
 from urllib.parse import quote_plus
+from hashlib import sha256
 
 from fastapi.responses import JSONResponse
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup, PageElement, NavigableString
 
-from constants import USER_AGENT_HEADERS, MY_DESKTOP, MAIN_WEBSITE, BAD_WORDS
+from constants import USER_AGENT_HEADERS, MY_DESKTOP, MAIN_WEBSITE, BAD_WORDS, CACHE_DIR
 from cache import Classrooms
 from env import API_URL
 
@@ -148,3 +149,8 @@ def lessons_length(day: dict):
     day['hours'] = round(minutes / 60)
     day['start'] = day['lessons'][0]['start']
     day['end'] = day['lessons'][-1]['end']
+
+
+def get_cached_filename(link: str) -> str:
+    hash_name = sha256(link.encode()).hexdigest()
+    return str(CACHE_DIR / hash_name)

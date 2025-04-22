@@ -2,19 +2,24 @@ from json import loads
 from urllib.parse import quote_plus
 from secrets import token_hex
 from os import remove
+from secrets import token_hex
 from os.path import splitext, exists
+from pathlib import Path
+from datetime import datetime, timedelta
 
 from aiohttp import ClientSession, MultipartWriter
-from aiofiles import open
+import aiofiles
 from bs4 import BeautifulSoup
 from fastapi import FastAPI, UploadFile, Request
 from fastapi.responses import JSONResponse, FileResponse
 from starlette.background import BackgroundTask
 
 from constants import (
-    UPLOAD_TO_REPOSITORY, PROFILE_PAGE, USER_AGENT_HEADERS
+    UPLOAD_TO_REPOSITORY, PROFILE_PAGE, USER_AGENT_HEADERS,
+    CACHE_DIR, CACHE_LIFETIME
 )
-from utils import check_auth, error
+from utils import check_auth, error, get_cached_filename
+
 
 media_app = FastAPI()
 
@@ -75,21 +80,23 @@ async def upload_avatar(access_token: str, file: UploadFile):
 
 @media_app.get('/proxy/file')
 async def proxy_file_get(link: str, access_token: str = None):
-    session = ClientSession()
-    _, ext = splitext(link)
-    filename = f'{token_hex(32)}.{ext}' if ext else token_hex(32)
+    cached_file = Path(get_cached_filename(link))
+    if cached_file.exists():
+        if datetime.utcnow() - datetime.utcfromtimestamp(cached_file.stat().st_mtime) < CACHE_LIFETIME:
+            return FileResponse(cached_file)
+
+    headers = USER_AGENT_HEADERS
     if access_token:
-        if isinstance(_headers := await check_auth(access_token), JSONResponse):
-            return _headers
-        async with session.get(link, headers=_headers) as resp:
-            async with open(filename, 'wb') as f:
-                await f.write(await resp.content.read())
-    else:
-        async with session.get(link, headers=USER_AGENT_HEADERS) as resp:
-            async with open(filename, 'wb') as f:
-                await f.write(await resp.content.read())
-    await session.close()
-    if exists(filename):
-        task = BackgroundTask(func=lambda: remove(filename))
-        return FileResponse(filename, background=task)
-    return error('', 404)
+        auth_result = await check_auth(access_token)
+        if isinstance(auth_result, JSONResponse):
+            return auth_result
+        headers = auth_result
+
+    async with ClientSession() as session:
+        async with session.get(link, headers=headers) as resp:
+            if resp.status != 200:
+                return error('Failed to fetch file', resp.status)
+            async with aiofiles.open(cached_file, 'wb') as f:
+                await f.write(await resp.read())
+
+    return FileResponse(cached_file)
