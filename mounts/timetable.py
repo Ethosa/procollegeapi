@@ -126,24 +126,25 @@ async def get_free_classrooms(day: int = -1, time: str | None = None, number: in
         _time = int(time_h) * 60 * 60 + int(time_m) * 60
     for branch_id in Classrooms.branches.keys():
         for group_id in Classrooms.branches[branch_id].keys():
-            _day = Classrooms.branches[branch_id][group_id]['week'][day]['lessons']
-            if number == -1 and time is None:
-                for lesson in _day:
-                    if lesson['room'] in free_classrooms:
-                        free_classrooms.remove(lesson['room'])
-            elif number >= 0 and time is None:
-                for lesson in _day:
-                    if lesson['number'] == str(number) and lesson['room'] in free_classrooms:
-                        free_classrooms.remove(lesson['room'])
-            elif number == -1 and time is not None:
-                for lesson in _day:
-                    start_h, start_m = lesson['start'].split(':')
-                    end_h, end_m = lesson['end'].split(':')
-                    start_seconds = int(start_h) * 60 * 60 + int(start_m) * 60
-                    end_seconds = int(end_h) * 60 * 60 + int(end_m) * 60
-                    if start_seconds <= _time <= end_seconds:
+            if len(Classrooms.branches[branch_id][group_id]['week']) < day:
+                _day = Classrooms.branches[branch_id][group_id]['week'][day]['lessons']
+                if number == -1 and time is None:
+                    for lesson in _day:
                         if lesson['room'] in free_classrooms:
                             free_classrooms.remove(lesson['room'])
+                elif number >= 0 and time is None:
+                    for lesson in _day:
+                        if lesson['number'] == str(number) and lesson['room'] in free_classrooms:
+                            free_classrooms.remove(lesson['room'])
+                elif number == -1 and time is not None:
+                    for lesson in _day:
+                        start_h, start_m = lesson['start'].split(':')
+                        end_h, end_m = lesson['end'].split(':')
+                        start_seconds = int(start_h) * 60 * 60 + int(start_m) * 60
+                        end_seconds = int(end_h) * 60 * 60 + int(end_m) * 60
+                        if start_seconds <= _time <= end_seconds:
+                            if lesson['room'] in free_classrooms:
+                                free_classrooms.remove(lesson['room'])
     return free_classrooms
 
 
