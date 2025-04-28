@@ -98,7 +98,7 @@ async def get_teacher_week_by_id(
                     if len(Classrooms.branches[branch_id][group_id]['week']) <= day_index:
                         continue
                     for lesson in Classrooms.branches[branch_id][group_id]['week'][day_index]['lessons']:
-                        if lesson['room'] == classroom and lesson['number'] == number:
+                        if lesson['classroom'] == classroom and lesson['number'] == number:
                             result['days'][-1]['lessons'][-1]['start'] = lesson['start']
                             result['days'][-1]['lessons'][-1]['end'] = lesson['end']
                             break
@@ -123,7 +123,7 @@ async def get_teacher_week_by_id(
                     if len(Classrooms.branches[branch_id][group_id]['week']) <= day_index:
                         continue
                     for lesson in Classrooms.branches[branch_id][group_id]['week'][day_index]['lessons']:
-                        if lesson['room'] == classroom and lesson['number'] == number:
+                        if lesson['classroom'] == classroom and lesson['number'] == number:
                             result['days'][-1]['lessons'][-1]['start'] = lesson['start']
                             result['days'][-1]['lessons'][-1]['end'] = lesson['end']
                             break

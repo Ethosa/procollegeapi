@@ -152,7 +152,7 @@ async def check_classrooms_available():
                                 'number': _time[0].text.strip(),
                                 'start': _time[1].text.strip(),
                                 'end': _time[2].text.strip(),
-                                'room': classroom,
+                                'classroom': classroom,
                                 'teacher': lesson_data.find('div', {'class': 'discSubgroupTeacher'}).text.strip(),
                                 'title': lesson_data.find('div', {'class': 'discHeader'}).find('span').text.strip(),
                             })

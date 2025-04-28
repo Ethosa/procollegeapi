@@ -130,12 +130,12 @@ async def get_free_classrooms(day: int = -1, time: str | None = None, number: in
                 _day = Classrooms.branches[branch_id][group_id]['week'][day]['lessons']
                 if number == -1 and time is None:
                     for lesson in _day:
-                        if lesson['room'] in free_classrooms:
-                            free_classrooms.remove(lesson['room'])
+                        if lesson['classroom'] in free_classrooms:
+                            free_classrooms.remove(lesson['classroom'])
                 elif number >= 0 and time is None:
                     for lesson in _day:
-                        if lesson['number'] == str(number) and lesson['room'] in free_classrooms:
-                            free_classrooms.remove(lesson['room'])
+                        if lesson['number'] == str(number) and lesson['classroom'] in free_classrooms:
+                            free_classrooms.remove(lesson['classroom'])
                 elif number == -1 and time is not None:
                     for lesson in _day:
                         start_h, start_m = lesson['start'].split(':')
@@ -143,8 +143,8 @@ async def get_free_classrooms(day: int = -1, time: str | None = None, number: in
                         start_seconds = int(start_h) * 60 * 60 + int(start_m) * 60
                         end_seconds = int(end_h) * 60 * 60 + int(end_m) * 60
                         if start_seconds <= _time <= end_seconds:
-                            if lesson['room'] in free_classrooms:
-                                free_classrooms.remove(lesson['room'])
+                            if lesson['classroom'] in free_classrooms:
+                                free_classrooms.remove(lesson['classroom'])
     return free_classrooms
 
 
@@ -168,7 +168,7 @@ async def get_classroom_free_for_week(room: str):
                     if lesson['number'] == days[day_index]['lessons'][lesson_index]['number']:
                         days[day_index]['lessons'][lesson_index]['start'] = lesson['start']
                         days[day_index]['lessons'][lesson_index]['end'] = lesson['end']
-                    if lesson['room'] == room:
+                    if lesson['classroom'] == room:
                         for i in days[day_index]['lessons']:
                             if i['number'] == lesson['number']:
                                 i['title'] = lesson['title']
