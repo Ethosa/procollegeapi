@@ -34,12 +34,12 @@ jobs:
           echo "escaped_actor=$escaped_actor" >> $GITHUB_ENV
           echo "escaped_branch=$escaped_branch" >> $GITHUB_ENV
 
-      - name: Send Telegram Message
-        run: |
-          curl \
-            --data-urlencode 'chat_id=${{ secrets.TELEGRAM_CHAT_ID }}' \
-            --data-urlencode 'message_thread_id=${{ secrets.TELEGRAM_MESSAGE_THREAD_ID }}' \
-            --data-urlencode 'link_preview_options={"url":"${{ github.event.head_commit.url }}"}' \
-            --data-urlencode 'parse_mode=markdownv2' \
-            --data-urlencode $'text=🔨 *Backend deploy* 🔨\n\n>${{ env.escaped_message }}\n_by [${{ env.escaped_actor }}](https://github.com/${{ env.escaped_actor }})_ at `${{ env.escaped_branch }}`\n\n[commit link](${{ github.event.head_commit.url }})' \
-            curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage"
+      # - name: Send Telegram Message
+      #   run: |
+      #     curl \
+      #       --data-urlencode 'chat_id=${{ secrets.TELEGRAM_CHAT_ID }}' \
+      #       --data-urlencode 'message_thread_id=${{ secrets.TELEGRAM_MESSAGE_THREAD_ID }}' \
+      #       --data-urlencode 'link_preview_options={"url":"${{ github.event.head_commit.url }}"}' \
+      #       --data-urlencode 'parse_mode=markdownv2' \
+      #       --data-urlencode $'text=🔨 *Backend deploy* 🔨\n\n>${{ env.escaped_message }}\n_by [${{ env.escaped_actor }}](https://github.com/${{ env.escaped_actor }})_ at `${{ env.escaped_branch }}`\n\n[commit link](${{ github.event.head_commit.url }})' \
+      #       curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage"

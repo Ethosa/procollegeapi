@@ -15,7 +15,7 @@ photos_app = FastAPI()
 
 @photos_app.get('/albums')
 @cache_request()
-async def get_all_albums():
+async def get_all_albums(offset: int = 0, limit: int = 20):
     client = ClientSession()
 
     if time() - PhotoCache.albums_last_update > PhotoCache.cache_time_secs:
@@ -34,7 +34,7 @@ async def get_all_albums():
                     'preview': album.find('img').get('src').replace('_mini', ''),
                 })
     await client.close()
-    return PhotoCache.albums
+    return PhotoCache.albums[offset:offset+limit]
 
 
 @photos_app.get('/{album_id:int}')

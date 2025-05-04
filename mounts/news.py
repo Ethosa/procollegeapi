@@ -57,6 +57,10 @@ async def get_all_news(page: int = 1, md: bool = False):
     async with session.get(MAIN_WEBSITE_ALL_NEWS + f'?p_cur={page-1}') as resp:
         page_data = BeautifulSoup(await resp.text())
 
+        ttnav = page_data.find('div', {'class': 'ttnav bottom'})
+        last_page = int(ttnav.find_all('a', {'class': 'anav'})[-1].text)
+        current_page = int(ttnav.find('strong').text)
+
         for item in page_data.find_all('div', {'class': 'newslist'}):
             preview_image = item.find('img')
             description = item.find('div', {'style': 'text-align: justify;'})
@@ -76,7 +80,11 @@ async def get_all_news(page: int = 1, md: bool = False):
             result.append(data)
 
     await session.close()
-    return result
+    return {
+        'page': page,
+        'pages': last_page if last_page > current_page else current_page,
+        'news': result
+    }
 
 
 @news_app.get('/id{news_id:int}')
