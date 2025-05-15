@@ -3,7 +3,7 @@ fastapi~=0.114.0
 aiohttp~=3.10.6
 beautifulsoup4~=4.12.3
 starlette~=0.38.5
-markdownify~=0.13.1
+markdownify>=0.14.1
 python-multipart
 aiofiles~=23.2.1
 uvicorn~=0.34.0
