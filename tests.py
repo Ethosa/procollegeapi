@@ -8,6 +8,8 @@ from tests.contacts import ContactsTest
 from tests.updates import UpdatesTest
 from tests.branches import BranchesTest
 from tests.media import MediaTest
+from tests.timetable_i import TimetableITest
+from tests.news_i import NewsITest
 
 
 if __name__ == '__main__':
@@ -22,6 +24,9 @@ if __name__ == '__main__':
     suite.addTests(loader.loadTestsFromTestCase(BranchesTest))
     suite.addTests(loader.loadTestsFromTestCase(UpdatesTest))
     suite.addTests(loader.loadTestsFromTestCase(MediaTest))
+
+    suite.addTests(loader.loadTestsFromTestCase(TimetableITest))
+    suite.addTests(loader.loadTestsFromTestCase(NewsITest))
 
     runner = unittest.TextTestRunner(verbosity=2)
     result = runner.run(suite)
