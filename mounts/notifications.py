@@ -17,7 +17,7 @@ async def get_unread_notifications_count(access_token: str):
     session = ClientSession()
     count = 0
     async with session.get(MY_DESKTOP, headers=_headers) as response:
-        page_data = BeautifulSoup(await response.text())
+        page_data = BeautifulSoup(await response.text(), features='html5lib')
         count_holder = page_data.find('div', {'id': 'nav-notification-popover-container'})
         if count_holder:
             count_holder = count_holder.find('div', {'class': 'count-container'})
@@ -33,7 +33,7 @@ async def get_unread_notifications_count(access_token: str, offset: int = 0, lim
         return _headers
     session = ClientSession()
     async with session.get(MY_DESKTOP, headers=_headers) as response:
-        page_data = BeautifulSoup(await response.text())
+        page_data = BeautifulSoup(await response.text(), features='html5lib')
         sess_key = page_data.find('input', {'name': 'sesskey'}).get('value')
         user_id = page_data.find('div', id='nav-notification-popover-container').get('data-userid')
     params = {

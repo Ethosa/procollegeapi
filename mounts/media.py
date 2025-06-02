@@ -32,12 +32,12 @@ async def upload_avatar(access_token: str, file: UploadFile):
     params = []
     file_data = file.file.read()
     async with session.get(PROFILE_PAGE, headers=_headers) as response:
-        page_data = BeautifulSoup(await response.text())
+        page_data = BeautifulSoup(await response.text(), features='html5lib')
         sess_key = page_data.find('input', {'name': 'sesskey'}).get('value')
         ctx_id = page_data.find('input', {'name': 'context'}).get('value')
         image_file = page_data.find('input', {'name': 'imagefile'}).get('value')
         author = page_data.find('a', {'id': 'usermenu'}).get('title')
-        page_data = BeautifulSoup(await response.text()).find('div', {'id': 'adaptable-tab-editprofile'})
+        page_data = page_data.find('div', {'id': 'adaptable-tab-editprofile'})
         for inp in page_data.find_all('input', {'type': 'hidden'}):
             params.append((inp.get('name'), inp.get('value')))
         params.append(('description_editor[text]', page_data.find(

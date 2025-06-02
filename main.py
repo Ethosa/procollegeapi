@@ -94,7 +94,7 @@ async def check_classrooms_available():
 
     # get all branches
     async with session.get('https://pro.kansk-tc.ru/blocks/manage_groups/website/view1.php') as resp:
-        page_data = BeautifulSoup(await resp.text())
+        page_data = BeautifulSoup(await resp.text(), features='html5lib')
         for i in page_data.find_all('span', {'class': 'spec-select-block'}):
             branch_id = int(i['group_id'])
             branches[branch_id] = {}
@@ -104,7 +104,7 @@ async def check_classrooms_available():
     for branch_id in branches.keys():
         courses[branch_id] = []
         async with session.get(f'{groups}?id={branch_id}') as resp:
-            page_data = BeautifulSoup(await resp.text())
+            page_data = BeautifulSoup(await resp.text(), features='html5lib')
             courses_data = list(page_data.find('div', {'class': 'content'}).children)[-2]
             for course in courses_data.find_all('div', {'class': 'spec-year-block'}):
                 course_title = course.find('span', {'class': 'spec-year-name'}).text.strip()
@@ -128,7 +128,7 @@ async def check_classrooms_available():
     for branch_id in branches.keys():
         for group_id in branches[branch_id].keys():
             async with session.get(f'{timetable}&gr={group_id}') as resp:
-                page_data = BeautifulSoup(await resp.text())
+                page_data = BeautifulSoup(await resp.text(), features='html5lib')
                 info = dict()
                 info['header'] = page_data.find('div', {'class': 'header'}).text.strip()
                 info['current_week'] = int(sub(

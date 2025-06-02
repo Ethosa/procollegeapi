@@ -16,7 +16,7 @@ async def get_teachers_by_branch_id(branch_id: int):
     session = ClientSession()
     teachers = []
     async with session.get(TEACHERS_TIMETABLE) as response:
-        page_data = BeautifulSoup(await response.text())
+        page_data = BeautifulSoup(await response.text(), features='html5lib')
         for option in page_data.find('select', id='prep').find_all('option'):
             if option.get('value') == '0':
                 continue
@@ -52,7 +52,7 @@ async def get_teacher_week_by_id(
     else:
         query = f'?dep={branch_id}&prep_id={teacher_id}&d={day}&m={month}&y={year}'
     async with session.get(TEACHERS_TIMETABLE + query) as response:
-        page_data = BeautifulSoup(await response.text())
+        page_data = BeautifulSoup(await response.text(), features='html5lib')
         table = page_data.find('table', {'class': 'main'})
     if table is None:
         return error('Преподавателя с таким ID нет.')

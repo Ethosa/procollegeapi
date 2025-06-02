@@ -17,8 +17,8 @@ async def get_contacts():
     client = ClientSession()
     result = []
 
-    async with (client.get(CONTACTS_PAGE) as resp):
-        page_data = BeautifulSoup(await resp.text())
+    async with client.get(CONTACTS_PAGE) as resp:
+        page_data = BeautifulSoup(await resp.text(), features='html5lib')
         can_parse = False
         for tr in page_data.find('table', {'style': 'width:100%'}).find_all('tr'):
             if tr.td is not None and 'СТРУКТУРНЫЕ' in tr.td.text:

@@ -13,8 +13,6 @@ async def check_for_updates(prerelease: bool = False):
             data = await resp.json()
 
             for item in data:
-                print(item)
-                print(item['prerelease'], prerelease)
                 if prerelease and item['prerelease']:
                     release = item
                     break

@@ -51,7 +51,7 @@ async def get_album_by_id(album_id: int):
             'last_update_time': time()
         }
         async with client.get(GALLERY_PAGE + f'?cid={album_id}', headers=USER_AGENT_HEADERS) as resp:
-            page_data = BeautifulSoup(await resp.text())
+            page_data = BeautifulSoup(await resp.text(), features='html5lib')
             PhotoCache.albums_full[album_id]['data']['title'] = page_data.find('h2').text.strip()
             for photo in page_data.find_all('a', {'class': 'gallery_prev'}):
                 photo = clean_styles(photo)

@@ -61,7 +61,7 @@ async def check_auth(access_token) -> JSONResponse | dict:
     })
     async with ClientSession() as session:
         async with session.get(MY_DESKTOP, headers=_headers) as response:
-            page_data = BeautifulSoup(await response.text())
+            page_data = BeautifulSoup(await response.text(), features='html5lib')
             if page_data.find('div', id='nav-notification-popover-container') is None:
                 _headers = error("Истек срок действия вашего токена", 401)
     return _headers

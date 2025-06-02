@@ -24,7 +24,7 @@ async def get_courses_by_branch_id(branch_id: int):
         'id': branch_id
     }
     async with session.get(STUDENTS_TIMETABLE_GROUPS, params=params) as response:
-        page_data = BeautifulSoup(await response.text())
+        page_data = BeautifulSoup(await response.text(), features='html5lib')
         courses_data = list(page_data.find('div', {'class': 'content'}).children)[-2]
         for course in courses_data.find_all('div', {'class': 'spec-year-block'}):
             data = {
@@ -55,7 +55,7 @@ async def get_timetable_by_group_id_week(branch_id: int, group_id: int, week: in
     if week > 0:
         params['week'] = week
     async with session.get(STUDENTS_TIMETABLE_GROUP, params=params) as response:
-        page_data = BeautifulSoup(await response.text())
+        page_data = BeautifulSoup(await response.text(), features='html5lib')
         result['header'] = page_data.find('div', {'class': 'header'}).text.strip()
         result['current_week'] = int(sub(
             r'\D+', '', page_data.find('div', {'class': 'weekHeader'}).span.text.strip()

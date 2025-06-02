@@ -23,7 +23,7 @@ async def get_all_branches(squeeze: bool = False):
     session = ClientSession()
     branches = []
     async with session.get(TEACHERS_TIMETABLE) as response:
-        page_data = BeautifulSoup(await response.text())
+        page_data = BeautifulSoup(await response.text(), features='html5lib')
         for option in page_data.find('select', id='dep').find_all('option'):
             if option.get('value') == '0':
                 continue

@@ -29,7 +29,7 @@ async def get_all_blogs(access_token: str, page: int = 1, user_id: int | None = 
         params['userid'] = user_id
     pages = 1
     async with session.get(BLOG_PAGE, params=params, headers=_headers) as response:
-        page_data = BeautifulSoup(await response.text())
+        page_data = BeautifulSoup(await response.text(), features='html5lib')
         max_page, min_page = 0, 100_000_00
         for page_item in page_data.find_all('li', {'class': 'page-item'}):
             if page_item.get('data-page-number'):
@@ -95,7 +95,7 @@ async def publish_new_blog_post(access_token: str, data: str = Form(...), file: 
     repository_data = {}
 
     async with session.get("https://pro.kansk-tc.ru/blog/edit.php?action=add", headers=_headers) as resp:
-        page_data = BeautifulSoup(await resp.text())
+        page_data = BeautifulSoup(await resp.text(), features='html5lib')
         for i in page_data.find(
                 'form', {'action': 'https://pro.kansk-tc.ru/blog/edit.php'}
         ).find_all('input', {'type': 'hidden'}):
@@ -154,7 +154,7 @@ async def delete_blog_post_by_id(access_token: str, post_id: int):
     session = ClientSession()
     params = {}
     async with session.get(DELETE_BLOG_POST + str(post_id), headers=_headers) as resp:
-        page_data = BeautifulSoup(await resp.text())
+        page_data = BeautifulSoup(await resp.text(), features='html5lib')
         form = page_data.find('form', {'action': 'edit.php'})
         if form is None:
             await session.close()

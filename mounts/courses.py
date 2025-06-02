@@ -20,7 +20,7 @@ async def get_branch_categories(access_token: str, category_id: int | None = Non
     result = []
     query = f'?categoryid={category_id}&perpage=1000' if category_id else f'?perpage=1000'
     async with session.get(COURSES_PAGE + query, headers=_headers) as resp:
-        page_data = BeautifulSoup(await resp.text())
+        page_data = BeautifulSoup(await resp.text(), features='html5lib')
         for category in page_data.find_all('h3', {'class': 'categoryname'}):
             result.append({
                 'id': int(category.find('a').get('href').split('categoryid=')[1]),
@@ -53,7 +53,7 @@ async def get_my_courses(access_token: str):
     session = ClientSession()
     result = []
     async with session.get(MY_DESKTOP, headers=_headers) as resp:
-        page_data = BeautifulSoup(await resp.text())
+        page_data = BeautifulSoup(await resp.text(), features='html5lib')
         for course in page_data.find('ul', {'id': 'dropdownmain-navigation0'}).find_all('li'):
             result.append({
                 'id': int(course.find('a').get('href').split('id=')[1].strip()),
@@ -74,7 +74,7 @@ async def get_course_by_id(course_id: int, access_token: str):
         'topics': []
     }
     async with session.get(VIEW_PAGE + f'?id={course_id}', headers=_headers) as resp:
-        page_data = BeautifulSoup(await resp.text())
+        page_data = BeautifulSoup(await resp.text(), features='html5lib')
         notice = page_data.find('div', {'id': 'notice'})
         error_message = page_data.find('p', {'class': 'errormessage'})
         if notice is not None and notice.text.strip().lower() == 'вы не можете записаться на этот курс':

@@ -55,7 +55,7 @@ async def sign_in(user: LoginUser):
             for key, val in cookies.items():
                 _headers['Cookie'] = val.value
                 token = key.replace('MoodleSession', '') + ':' + val.value
-            page_data = BeautifulSoup(await response.text())
+            page_data = BeautifulSoup(await response.text(), features='html5lib')
             if page_data is not None:
                 err = page_data.find('a', {'id': 'loginerrormessage'})
         if err is not None:
@@ -66,7 +66,7 @@ async def sign_in(user: LoginUser):
         await session.close()
         return error('Произошла неизвестная ошибка, попробуйте позже.')
     async with session.get(MY_DESKTOP, headers=_headers) as response:
-        page_data = BeautifulSoup(await response.text())
+        page_data = BeautifulSoup(await response.text(), features='html5lib')
         _user_id = page_data.find('div', id='nav-notification-popover-container')
         if _user_id is not None:
             user_id = _user_id.get('data-userid')
@@ -120,7 +120,7 @@ async def sign_in(access_token: str):
             for key, val in cookies.items():
                 _headers['Cookie'] = val.value
                 token = key.replace('MoodleSession', '') + ':' + val.value
-            page_data = BeautifulSoup(await response.text())
+            page_data = BeautifulSoup(await response.text(), features='html5lib')
             if page_data is not None:
                 err = page_data.find('a', {'id': 'loginerrormessage'})
         if err is not None:
@@ -131,7 +131,7 @@ async def sign_in(access_token: str):
         await session.close()
         return error('Произошла неизвестная ошибка, попробуйте позже.')
     async with session.get(MY_DESKTOP, headers=_headers) as response:
-        page_data = BeautifulSoup(await response.text())
+        page_data = BeautifulSoup(await response.text(), features='html5lib')
         _user_id = page_data.find('div', id='nav-notification-popover-container')
         if _user_id is not None:
             user_id = _user_id.get('data-userid')
@@ -158,7 +158,7 @@ async def get_user_info(access_token: str):
     courses = []
     today = {}
     async with session.get(MY_DESKTOP, headers=_headers) as response:
-        page_data = BeautifulSoup(await response.text())
+        page_data = BeautifulSoup(await response.text(), features='html5lib')
         main_info_div = page_data.find('div', id='d-info')
         for i in main_info_div.find_all('tr'):
             if i.th is not None and i.td is not None:
@@ -225,7 +225,7 @@ async def get_user_info(access_token: str):
     session = ClientSession()
     data = []
     async with session.get(MY_DESKTOP, headers=_headers) as response:
-        page_data = BeautifulSoup(await response.text())
+        page_data = BeautifulSoup(await response.text(), features='html5lib')
 
     await session.close()
     return data
@@ -239,7 +239,7 @@ async def get_user_profile(access_token: str):
     session = ClientSession()
     profile_data = {}
     async with session.get(PROFILE_PAGE, headers=_headers) as response:
-        page_data = BeautifulSoup(await response.text())
+        page_data = BeautifulSoup(await response.text(), features='html5lib')
         user_image = page_data.find('img', {'class': 'userpicture'})
         if user_image is not None and user_image.img is not None:
             profile_data['image'] = user_image.get('src')
@@ -279,7 +279,7 @@ async def edit_user_profile(access_token: str, user_data: EditUser):
     session = ClientSession()
     params = []
     async with session.get(PROFILE_PAGE, headers=_headers) as response:
-        page_data = BeautifulSoup(await response.text()).find('div', {'id': 'adaptable-tab-editprofile'})
+        page_data = BeautifulSoup(await response.text(), features='html5lib').find('div', {'id': 'adaptable-tab-editprofile'})
         for inp in page_data.find_all('input', {'type': 'hidden'}):
             params.append((inp.get('name'), inp.get('value')))
         if user_data.description is None:
@@ -318,7 +318,7 @@ async def get_timetable_for_day(access_token: str, day_number: int = 0):
     session = ClientSession()
     user_id: str | None = None
     async with session.get(MY_DESKTOP, headers=_headers) as response:
-        page_data = BeautifulSoup(await response.text())
+        page_data = BeautifulSoup(await response.text(), features='html5lib')
         user_id = page_data.find('div', id='nav-notification-popover-container').get('data-userid')
     today = {}
     params = {
@@ -326,7 +326,7 @@ async def get_timetable_for_day(access_token: str, day_number: int = 0):
         'day': day_number,
     }
     async with session.get(PROFILE_TIMETABLE, params=params, headers=_headers) as response:
-        page_data = BeautifulSoup(await response.text())
+        page_data = BeautifulSoup(await response.text(), features='html5lib')
         today = {
             'title': page_data.h3.text.strip(),
             'lessons': [],
