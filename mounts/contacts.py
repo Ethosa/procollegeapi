@@ -42,7 +42,7 @@ async def get_contacts():
                     'full_name': tr.select('td:nth-child(2)')[0].text.strip(),
                     'post': tr.select('td:nth-child(3)')[0].text.strip(),
                     'phones': phones,
-                    'address': address_info,
+                    'address': address_info.strip(),
                     'email': tr.select('td:nth-child(6)')[0].text.strip(),
                 })
     await client.close()
