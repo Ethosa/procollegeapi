@@ -29,7 +29,7 @@ async def get_contacts():
                 continue
             if can_parse:
                 address_info = (
-                    tr.select('td:nth-child(4)')[0].encode_contents()
+                    tr.select('td:nth-of-type(4)')[0].encode_contents()
                     .decode('utf-8').replace('<br/>', '\n').strip()
                 )
                 phones = findall(r'(\d *\(\d+\) *\d-\d\d-\d\d)', address_info)
@@ -39,11 +39,11 @@ async def get_contacts():
                 for p in phones:
                     address_info = address_info.replace(p, '')
                 result.append({
-                    'full_name': tr.select('td:nth-child(2)')[0].text.strip(),
-                    'post': tr.select('td:nth-child(3)')[0].text.strip(),
+                    'full_name': tr.select('td:nth-of-type(2)')[0].text.strip(),
+                    'post': tr.select('td:nth-of-type(3)')[0].text.strip(),
                     'phones': phones,
                     'address': address_info.strip(),
-                    'email': tr.select('td:nth-child(6)')[0].text.strip(),
+                    'email': tr.select('td:nth-of-type(6)')[0].text.strip(),
                 })
     await client.close()
     return result
