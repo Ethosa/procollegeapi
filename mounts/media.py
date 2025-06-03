@@ -79,7 +79,7 @@ async def upload_avatar(access_token: str, file: UploadFile):
 
 
 @media_app.get('/proxy/file')
-async def proxy_file_get(link: str, access_token: str = None, *args):
+async def proxy_file_get(link: str, access_token: str = None, *args, **kwargs):
     cached_file = Path(get_cached_filename(link))
     if cached_file.exists():
         if datetime.utcnow() - datetime.utcfromtimestamp(cached_file.stat().st_mtime) < CACHE_LIFETIME:
