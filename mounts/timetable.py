@@ -126,7 +126,7 @@ async def get_free_classrooms(day: int = -1, time: str | None = None, number: in
         _time = int(time_h) * 60 * 60 + int(time_m) * 60
     for branch_id in Classrooms.branches.keys():
         for group_id in Classrooms.branches[branch_id].keys():
-            if len(Classrooms.branches[branch_id][group_id]['week']) < day:
+            if len(Classrooms.branches[branch_id][group_id]['week']) > day:
                 _day = Classrooms.branches[branch_id][group_id]['week'][day]['lessons']
                 if number == -1 and time is None:
                     for lesson in _day:
