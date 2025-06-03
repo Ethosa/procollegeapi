@@ -91,11 +91,18 @@ async def proxy_file_get(request: Request, link: str, access_token: str = None):
         if isinstance(auth_result, JSONResponse):
             return auth_result
         headers = auth_result
+    
+    for key, value in request.query_params._dict:
+        if key in ['access_token', 'link']:
+            if '&' in link or '?' in link:
+                link += f'&{key}={value}'
+            else:
+                link += f'?{key}={value}'
 
     async with ClientSession() as session:
         async with session.get(link, headers=headers) as resp:
             if resp.status < 200 or resp.status >= 400:
-                return error({'msg': f'Failed to fetch file: {link}', 'req': request.query_params._dict}, resp.status)
+                return error(f'Failed to fetch file: {link}', resp.status)
             async with aiofiles.open(cached_file, 'wb') as f:
                 await f.write(await resp.read())
 
