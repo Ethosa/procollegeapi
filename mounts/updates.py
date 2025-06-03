@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import FastAPI
 from aiohttp import ClientSession
 
@@ -12,15 +14,10 @@ async def check_for_updates(prerelease: bool = False):
         async with session.get('https://api.github.com/repos/horanchikk/ktc-reborn/releases') as resp:
             data = await resp.json()
 
-            for item in data:
-                if prerelease:
-                    release = item
-                    break
-                elif not prerelease and not item['prerelease']:
-                    release = item
-                    break
+    if prerelease:
+        data = sorted(data, key=lambda x: datetime.strptime(x['published_at'], '%Y-%m-%dT%H:%M:%SZ'), reverse=True)
+    release = data[0]
     
-    # return data
     
     release_data = {
         'version': release['name'],
