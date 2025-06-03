@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 
 from constants import MAIN_WEBSITE, MAIN_WEBSITE_ALL_NEWS
 from utils import beautify_src, clean_styles, proxify
-from cache import cache_request
+from cache import cache_request, NewsCache
 
 news_app = FastAPI()
 
@@ -39,6 +39,14 @@ async def get_last_college_news(md: bool = False):
                         'preview': beautify_src(preview_image.get('src'), MAIN_WEBSITE) if preview_image else '',
                         'type': 'news'
                     }
+                if not data['preview']:
+                    if NewsCache.data[data['id']]:
+                        full_data = NewsCache.data[data['id']]
+                    else:
+                        full_data = await get_new_by_id(news_id=data['id'])
+                        NewsCache.data[data['id']] = full_data
+                    if full_data['preview']:
+                        data['preview'] = full_data['preview']
                 if data['preview']:
                     data['preview'] = proxify(data['preview'])
                 if md:
@@ -72,6 +80,14 @@ async def get_all_news(page: int = 1, md: bool = False):
                     'description': description.text.strip().replace('[подробнее]', '') if description is not None else '',
                     'preview': beautify_src(preview_image.get('src'), MAIN_WEBSITE) if preview_image else '',
                 }
+                if not data['preview']:
+                    if NewsCache.data[data['id']]:
+                        full_data = NewsCache.data[data['id']]
+                    else:
+                        full_data = await get_new_by_id(news_id=data['id'])
+                        NewsCache.data[data['id']] = full_data
+                    if full_data['preview']:
+                        data['preview'] = full_data['preview']
                 if data['preview']:
                     data['preview'] = proxify(data['preview'])
                 if md:

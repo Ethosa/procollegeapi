@@ -13,6 +13,11 @@ class FuncCache:
     data: dict = {}
 
 
+class NewsCache:
+    # ID: object
+    data: dict = {}
+
+
 class PhotoCache:
     albums_last_update: int = 0
     albums: list = []
