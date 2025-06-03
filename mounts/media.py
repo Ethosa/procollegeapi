@@ -92,6 +92,8 @@ async def proxy_file_get(link: str, access_token: str = None):
             return auth_result
         headers = auth_result
 
+    print(link)
+
     async with ClientSession() as session:
         async with session.get(link, headers=headers) as resp:
             if resp.status < 200 or resp.status >= 400:
