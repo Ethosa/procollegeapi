@@ -106,6 +106,9 @@ async def get_all_news(page: int = 1, md: bool = False):
 async def get_new_by_id(news_id: int, md: bool = False):
     result = {}
 
+    if news_id in NewsCache.data:
+        return NewsCache.data[news_id]
+
     async with ClientSession() as session:
         async with session.get(MAIN_WEBSITE_ALL_NEWS + f'?nid={news_id}') as resp:
             page_data = BeautifulSoup(await resp.text(), features='html5lib')
