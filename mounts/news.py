@@ -130,4 +130,5 @@ async def get_new_by_id(news_id: int, md: bool = False):
             if md:
                 result['content'] = markdownify(result['content'])
 
+    NewsCache.data[result['id']] = result
     return result
