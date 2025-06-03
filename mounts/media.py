@@ -95,7 +95,7 @@ async def proxy_file_get(request: Request, link: str, access_token: str = None):
     async with ClientSession() as session:
         async with session.get(link, headers=headers) as resp:
             if resp.status < 200 or resp.status >= 400:
-                return error({'msg': f'Failed to fetch file: {link}', 'req': request.query_params}, resp.status)
+                return error({'msg': f'Failed to fetch file: {link}', 'req': request.query_params._dict}, resp.status)
             async with aiofiles.open(cached_file, 'wb') as f:
                 await f.write(await resp.read())
 
