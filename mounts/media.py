@@ -13,7 +13,6 @@ from bs4 import BeautifulSoup
 from fastapi import FastAPI, UploadFile, Request
 from fastapi.responses import JSONResponse, FileResponse
 from starlette.background import BackgroundTask
-from sentry_sdk import logger as sentry_logger
 
 from constants import (
     UPLOAD_TO_REPOSITORY, PROFILE_PAGE, USER_AGENT_HEADERS,
@@ -93,12 +92,10 @@ async def proxy_file_get(link: str, access_token: str = None):
             return auth_result
         headers = auth_result
 
-    sentry_logger.debug(f'link: {link}')
-
     async with ClientSession() as session:
         async with session.get(link, headers=headers) as resp:
             if resp.status < 200 or resp.status >= 400:
-                return error('Failed to fetch file', resp.status)
+                return error(f'Failed to fetch file: {link}', resp.status)
             async with aiofiles.open(cached_file, 'wb') as f:
                 await f.write(await resp.read())
 
