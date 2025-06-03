@@ -13,12 +13,14 @@ async def check_for_updates(prerelease: bool = False):
             data = await resp.json()
 
             for item in data:
-                if prerelease and item['prerelease']:
+                if prerelease:
                     release = item
                     break
-                elif not prerelease:
+                elif not prerelease and not item['prerelease']:
                     release = item
                     break
+    
+    # return data
     
     release_data = {
         'version': release['name'],
