@@ -93,7 +93,7 @@ async def proxy_file_get(request: Request, link: str, access_token: str = None):
         headers = auth_result
     
     for key, value in request.query_params._dict:
-        if key in ['access_token', 'link']:
+        if key not in ['access_token', 'link']:
             if '&' in link or '?' in link:
                 link += f'&{key}={value}'
             else:
