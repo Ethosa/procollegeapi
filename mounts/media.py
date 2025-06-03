@@ -79,7 +79,7 @@ async def upload_avatar(access_token: str, file: UploadFile):
 
 
 @media_app.get('/proxy/file')
-async def proxy_file_get(link: str, access_token: str = None):
+async def proxy_file_get(link: str, access_token: str = None, *args):
     cached_file = Path(get_cached_filename(link))
     if cached_file.exists():
         if datetime.utcnow() - datetime.utcfromtimestamp(cached_file.stat().st_mtime) < CACHE_LIFETIME:
@@ -95,7 +95,7 @@ async def proxy_file_get(link: str, access_token: str = None):
     async with ClientSession() as session:
         async with session.get(link, headers=headers) as resp:
             if resp.status < 200 or resp.status >= 400:
-                return error(f'Failed to fetch file: {link}', resp.status)
+                return error({'msg': f'Failed to fetch file: {link}', 'args': args}, resp.status)
             async with aiofiles.open(cached_file, 'wb') as f:
                 await f.write(await resp.read())
 
