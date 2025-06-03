@@ -92,12 +92,12 @@ async def proxy_file_get(request: Request, link: str, access_token: str = None):
             return auth_result
         headers = auth_result
     
-    for key, value in request.query_params._dict:
+    for key in request.query_params._dict.keys():
         if key not in ['access_token', 'link']:
             if '&' in link or '?' in link:
-                link += f'&{key}={value}'
+                link += f'&{key}={request.query_params._dict[key]}'
             else:
-                link += f'?{key}={value}'
+                link += f'?{key}={request.query_params._dict[key]}'
 
     async with ClientSession() as session:
         async with session.get(link, headers=headers) as resp:
