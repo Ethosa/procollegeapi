@@ -40,7 +40,7 @@ async def get_last_college_news(md: bool = False):
                         'type': 'news'
                     }
                 if not data['preview']:
-                    if NewsCache.data[data['id']]:
+                    if data['id'] in NewsCache.data:
                         full_data = NewsCache.data[data['id']]
                     else:
                         full_data = await get_new_by_id(news_id=data['id'])
@@ -81,7 +81,7 @@ async def get_all_news(page: int = 1, md: bool = False):
                     'preview': beautify_src(preview_image.get('src'), MAIN_WEBSITE) if preview_image else '',
                 }
                 if not data['preview']:
-                    if NewsCache.data[data['id']]:
+                    if data['id'] in NewsCache.data:
                         full_data = NewsCache.data[data['id']]
                     else:
                         full_data = await get_new_by_id(news_id=data['id'])
