@@ -99,6 +99,8 @@ def beautify_src(link: str, root: str):
 
 
 def proxify(link: str, access_token: str | None = None):
+    if link.startswith('data:'):
+        return link
     if access_token:
         return f'{API_URL}/api/media/proxy/file?access_token={access_token}&link={link}'
     return f'{API_URL}/api/media/proxy/file?link={link}'

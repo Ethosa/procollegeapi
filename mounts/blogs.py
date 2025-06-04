@@ -11,12 +11,14 @@ from constants import (
 )
 from utils import check_auth, x_form_urlencoded, clean_styles, match_bad_words, error
 from models.blog import NewBlogPost
+from cache import cache_request
 
 
 blogs_app = FastAPI()
 
 
 @blogs_app.get('/')
+@cache_request(expires=60*60*5)
 async def get_all_blogs(access_token: str, page: int = 1, user_id: int | None = None):
     if isinstance(_headers := await check_auth(access_token), JSONResponse):
         return _headers
