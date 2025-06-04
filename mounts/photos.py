@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 
 from cache import PhotoCache, cache_request
 from constants import GALLERY_PAGE, USER_AGENT_HEADERS
-from utils import clean_styles
+from utils import clean_styles, proxify
 
 
 photos_app = FastAPI()
@@ -56,7 +56,7 @@ async def get_album_by_id(album_id: int):
             for photo in page_data.find_all('a', {'class': 'gallery_prev'}):
                 photo = clean_styles(photo)
                 PhotoCache.albums_full[album_id]['data']['photos'].append(
-                    photo.get('href')
+                    proxify(photo.get('href'))
                 )
     await client.close()
     return PhotoCache.albums_full[album_id]['data']
