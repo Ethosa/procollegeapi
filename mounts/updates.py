@@ -16,6 +16,11 @@ async def check_for_updates(prerelease: bool = False):
 
     if prerelease:
         data = sorted(data, key=lambda x: datetime.strptime(x['published_at'], '%Y-%m-%dT%H:%M:%SZ'), reverse=True)
+    else:
+        data = list(filter(
+            lambda x: not x['prerelease'],
+            sorted(data, key=lambda x: datetime.strptime(x['published_at'], '%Y-%m-%dT%H:%M:%SZ'), reverse=True)
+        ))
     release = data[0]
     
     
