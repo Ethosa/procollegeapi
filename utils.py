@@ -143,8 +143,14 @@ def lessons_length(day: dict):
         return
     minutes = 0
     for lesson in day['lessons']:
-        start_hours, start_minutes = lesson['start'].split(':')
-        end_hours, end_minutes = lesson['end'].split(':')
+        if lesson['start'] == '??-??':
+            start_hours, start_minutes = (0, 0)
+        else:
+            start_hours, start_minutes = lesson['start'].split(':')
+        if lesson['end'] == '??-??':
+            end_hours, end_minutes = (0, 0)
+        else:
+            end_hours, end_minutes = lesson['end'].split(':')
         start = int(start_hours)*60 + int(start_minutes)
         end = int(end_hours)*60 + int(end_minutes)
         minutes += end - start
