@@ -3,10 +3,13 @@ from datetime import datetime
 from fastapi import FastAPI
 from aiohttp import ClientSession
 
+from cache import cache_request
+
 updates_app = FastAPI()
 
 
 @updates_app.get('/check')
+@cache_request(60 * 5)
 async def check_for_updates(prerelease: bool = False):
     release = {}
 
