@@ -6,7 +6,7 @@ import sentry_sdk
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.tasks import repeat_every
-from aiohttp import ClientSession
+from aiohttp import ClientSession, ClientTimeout
 import collections
 collections.Callable = collections.abc.Callable
 from bs4 import BeautifulSoup
@@ -24,11 +24,12 @@ from mounts.notifications import notifications_app
 from mounts.photos import photos_app
 from mounts.contacts import contacts_app
 from mounts.updates import updates_app
+from mounts.status import status_app
 from middleware.file_size_limit import LimitUploadSize
 from middleware.error_handler import catch_exceptions_middleware
 
-from cache import Classrooms
-from constants import CACHE_DIR
+from cache import Classrooms, StatusCache
+from constants import CACHE_DIR, LOGIN_URL, MAIN_WEBSITE
 from utils import lessons_length
 
 
@@ -65,13 +66,14 @@ api_app.mount('/photos', photos_app)
 api_app.mount('/contacts', contacts_app)
 api_app.mount('/notifications', notifications_app)
 api_app.mount('/updates', updates_app)
+api_app.mount('/status', status_app)
 
 app.mount('/api', api_app)
 
 
 
 @app.on_event('startup')
-@repeat_every(seconds=60 * 1)  # каждую минуту
+@repeat_every(seconds=60 * 5)  # every 5 minutes
 async def clean_cache():
     now = datetime.utcnow()
     for file in CACHE_DIR.iterdir():
@@ -82,6 +84,23 @@ async def clean_cache():
                     file.unlink()
                 except Exception as e:
                     print(f"Failed to delete {file}: {e}")
+
+
+@app.on_event('startup')
+@repeat_every(seconds=60*60)  # every hour
+async def check_site_availability():
+    timeout = ClientTimeout(total=5)
+    async with ClientSession(timeout=timeout) as session:
+        try:
+            async with session.get(LOGIN_URL) as response:
+                StatusCache.update_main_website(True)
+        except Exception as e:
+            StatusCache.update_main_website(False)
+        try:
+            async with session.get(MAIN_WEBSITE) as response:
+                StatusCache.update_pro_college(True)
+        except Exception as e:
+            StatusCache.update_pro_college(False)
 
 
 @app.on_event('startup')

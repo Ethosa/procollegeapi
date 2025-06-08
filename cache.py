@@ -32,6 +32,23 @@ class Classrooms:
     exclude = ['???', 'н/к', 'дот', 'ДОТ']
 
 
+class StatusCache:
+    main_website = []
+    pro_college = []
+
+    @staticmethod
+    def update_main_website(elem):
+        if len(StatusCache.main_website) >= 24:
+            StatusCache.main_website.remove(StatusCache.main_website[0])
+        StatusCache.main_website.append(elem)
+
+    @staticmethod
+    def update_pro_college(elem):
+        if len(StatusCache.pro_college) >= 24:
+            StatusCache.pro_college.remove(StatusCache.pro_college[0])
+        StatusCache.pro_college.append(elem)
+
+
 def cache_request(expires: int = 60 * 60 * 10):
     def decorator(func: Callable):
         @wraps(func)
