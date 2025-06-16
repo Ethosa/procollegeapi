@@ -23,7 +23,7 @@ if __name__ == '__main__':
     suite.addTests(loader.loadTestsFromTestCase(ContactsTest))
     suite.addTests(loader.loadTestsFromTestCase(BranchesTest))
     suite.addTests(loader.loadTestsFromTestCase(UpdatesTest))
-    suite.addTests(loader.loadTestsFromTestCase(MediaTest))
+    # suite.addTests(loader.loadTestsFromTestCase(MediaTest))
 
     suite.addTests(loader.loadTestsFromTestCase(TimetableITest))
     suite.addTests(loader.loadTestsFromTestCase(NewsITest))

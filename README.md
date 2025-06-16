@@ -1,11 +1,20 @@
 # Pro college API
 
-## Содержание
-- [`/user` документация по пользовательским маршрутам](http://127.0.0.1:8000/user/redoc)
-- [`/blogs` документация по блогам](http://127.0.0.1:8000/blogs/redoc)
-- [`/teachers` документация по преподавателям](http://127.0.0.1:8000/teachers/redoc)
-- [`/timetable` документация по расписанию](http://127.0.0.1:8000/timetable/redoc)
-- [`/branches` документация по филиалам ](http://127.0.0.1:8000/branches/redoc)
+## Документация по эндпоинтам
+- [`/user` работа с пользователем](https://hapticx.ru/api/user/redoc)
+- [`/blogs` блог АСУ ProCollege](https://hapticx.ru/api/blogs/redoc)
+- [`/news` новости с официального сайта](https://hapticx.ru/api/news/redoc)
+- [`/teachers` расписание преподавателей](https://hapticx.ru/api/teachers/redoc)
+- [`/timetable` расписание студентов и аудиторий](https://hapticx.ru/api/timetable/redoc)
+- [`/branches` филиалы](https://hapticx.ru/api/branches/redoc)
+- [`/contacts` контакты из официального сайта](https://hapticx.ru/api/contacts/redoc)
+- [`/media` медиа, прокси](https://hapticx.ru/api/media/redoc)
+- [`/photos` фотогалерея](https://hapticx.ru/api/photos/redoc)
+- [`/courses` курсы из АСУ ProCollege](https://hapticx.ru/api/courses/redoc)
+- [`/messages` сообщения](https://hapticx.ru/api/messages/redoc)
+- [`/notifications` уведомления](https://hapticx.ru/api/notifications/redoc)
+- [`/updates` OTA обновления](https://hapticx.ru/api/updates/redoc)
+- [`/status` работоспособность сайтов](https://hapticx.ru/api/status/redoc)
 
 
 ## Авторизация
